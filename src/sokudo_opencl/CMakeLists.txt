@@ -4,6 +4,9 @@ project(sokudo_opencl)
 
 add_library(sokudo_opencl STATIC
         cl_test.h
-        cl_test.cpp cl_helper.h cl_helper.cpp)
+        cl_test.cpp
+        cl_helper.h
+        cl_helper.cpp)
 
 target_link_libraries(sokudo_opencl OpenCL)
+add_compile_definitions(SOKUDO_OPENCL CL_HPP_ENABLE_EXCEPTIONS)

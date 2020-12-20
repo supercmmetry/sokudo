@@ -3,8 +3,7 @@
 
 namespace sokudo {
     enum Kernel {
-        TEST_ADD,
-
+        TEST,
     };
 }
 

@@ -3,7 +3,10 @@ project(sokudo_lib CUDA)
 
 add_library(sokudo STATIC
         sokudo.h
-        sokudo.cpp sokudo_opencl/cl_test.cpp kernel.h errors.h)
+        sokudo.cpp
+        kernel.h
+        errors.h
+        task.h)
 
 target_compile_features(sokudo PUBLIC cxx_std_20)
 

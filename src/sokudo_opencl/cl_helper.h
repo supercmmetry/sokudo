@@ -3,19 +3,31 @@
 
 #include <cstdint>
 #include <string>
+#include <unordered_map>
 #include <mutex>
 #include <CL/cl2.hpp>
 #include <kernel.h>
 #include <errors.h>
+#include <task.h>
 
 namespace sokudo::opencl {
+    class ProgramProvider {
+    private:
+        static std::unordered_map<Kernel, cl::Program> _program_map;
+        static std::mutex _mutex;
+    public:
+        static cl::Program get(Kernel kernel);
+
+        static void clear();
+    };
+
     class DeviceProvider {
     private:
         static std::vector<cl::Device> _devices;
         static std::mutex _mutex;
         static uint64_t _device_index;
     public:
-        template<uint32_t device_type>
+        template<uint32_t device_type = CL_DEVICE_TYPE_ALL>
         static void load_devices() {
             _mutex.lock();
             _devices.clear();
@@ -28,6 +40,8 @@ namespace sokudo::opencl {
                 platform.getDevices(device_type, &platform_devices);
                 _devices.insert(_devices.end(), platform_devices.begin(), platform_devices.end());
             }
+
+            ProgramProvider::clear();
             _mutex.unlock();
         }
 
@@ -44,7 +58,24 @@ namespace sokudo::opencl {
         }
     };
 
-    cl::Program load(Kernel kernel);
+    class KernelProvider {
+    public:
+        static cl::Kernel get(Kernel kernel);
+    };
+
+    class CLTask : GenericTask {
+    private:
+        cl::CommandQueue _queue;
+    public:
+        CLTask(const cl::CommandQueue& queue) {
+            _queue = queue;
+        }
+
+        void sync() override {
+            _queue.flush();
+            _queue.finish();
+        }
+    };
 }
 
 #endif

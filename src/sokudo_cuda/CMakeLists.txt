@@ -6,4 +6,4 @@ add_library(sokudo_cuda STATIC
         cuda_test.cu)
 
 target_link_libraries(sokudo_cuda cuda cudart)
-
+add_compile_definitions(SOKUDO_CUDA)
