@@ -2,10 +2,20 @@
 #include <errors.h>
 
 #ifndef SOKUDO_OPENCL_BUILD_OPTIONS
-#define SOKUDO_OPENCL_BUILD_OPTIONS "-cl-std=CL2.1"
+#define SOKUDO_OPENCL_BUILD_OPTIONS "-cl-std=CL2.0"
 #endif
 
-cl::Program sokudo::opencl::ProgramProvider::get(sokudo::Kernel kernel) {
+using namespace sokudo::opencl;
+
+std::unordered_map<sokudo::Kernel, cl::Program> ProgramProvider::_program_map;
+std::mutex ProgramProvider::_mutex;
+
+std::vector<cl::Device> DeviceProvider::_devices;
+std::mutex DeviceProvider::_mutex;
+uint64_t DeviceProvider::_device_index = 0;
+
+
+cl::Program ProgramProvider::get(sokudo::Kernel kernel) {
     _mutex.lock();
     if (_program_map.contains(kernel)) {
         _mutex.unlock();
@@ -33,13 +43,13 @@ cl::Program sokudo::opencl::ProgramProvider::get(sokudo::Kernel kernel) {
     return program;
 }
 
-void sokudo::opencl::ProgramProvider::clear() {
+void ProgramProvider::clear() {
     _mutex.lock();
     _program_map.clear();
     _mutex.unlock();
 }
 
-cl::Kernel sokudo::opencl::KernelProvider::get(sokudo::Kernel kernel) {
+cl::Kernel KernelProvider::get(sokudo::Kernel kernel) {
     cl::Program program = ProgramProvider::get(kernel);
     return cl::Kernel(program, "run");
 }

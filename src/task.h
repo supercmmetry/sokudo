@@ -1,14 +1,17 @@
 #ifndef SOKUDO_TASK_H
 #define SOKUDO_TASK_H
 
+#include <vector>
 #include <shared_mutex>
-#include "kernel.h"
-#include "errors.h"
+#include <kernel_enums.h>
+#include <errors.h>
 
 #ifdef SOKUDO_OPENCL
-
 #include <CL/cl2.hpp>
+#endif
 
+#ifdef SOKUDO_CUDA
+#include <sokudo_cuda/cuda_helper.h>
 #endif
 
 namespace sokudo {
@@ -18,20 +21,9 @@ namespace sokudo {
         CPU
     };
 
-    class GenericTask {
-    public:
-        virtual void sync() = 0;
-    };
-
-    enum BufferPermissions {
-        READ = 0x1,
-        WRITE = 0x2
-    };
-
     template<class Type>
     class DataBuffer {
     private:
-        uint64_t _permissions{};
         Type *_data{};
         uint64_t _size{};
         std::shared_mutex _mutex;
@@ -52,7 +44,7 @@ namespace sokudo {
             _refs = new uint64_t;
         }
 
-        DataBuffer(std::vector<Type> data) : DataBuffer() {
+        explicit DataBuffer(std::vector<Type> data) : DataBuffer() {
             _size = data.size();
             _data = new Type[_size];
 
@@ -87,7 +79,6 @@ namespace sokudo {
                 _mutex = buffer._mutex;
                 _refs = buffer._refs;
                 _data = buffer._data;
-                _permissions = buffer._permissions;
                 _size = buffer._size;
 
                 increment_ref();
@@ -127,6 +118,51 @@ namespace sokudo {
             }
             _mutex.unlock();
         }
+    };
+
+    class Task {
+    protected:
+        TaskExecutor _executor = TaskExecutor::CPU;
+    public:
+        virtual void sync() = 0;
+    };
+
+#ifdef SOKUDO_CUDA
+    class CUDATask : public Task {
+    private:
+        CudaAbstractTask _task;
+    public:
+        explicit CUDATask(const CudaAbstractTask &task) : _task(nullptr) {
+            _executor = CUDA;
+            _task = task;
+        }
+
+        void sync() override {
+            _task.sync();
+            _task.destroy();
+        }
+    };
+#endif
+
+#ifdef SOKUDO_OPENCL
+    class CLTask : public Task {
+    private:
+        cl::CommandQueue _queue;
+    public:
+        explicit CLTask(const cl::CommandQueue &queue) {
+            _queue = queue;
+            _executor = TaskExecutor::OPENCL;
+        }
+
+        void sync() override {
+            _queue.flush();
+            _queue.finish();
+        }
+    };
+#endif
+
+    class TaskGraph {
+
     };
 }
 

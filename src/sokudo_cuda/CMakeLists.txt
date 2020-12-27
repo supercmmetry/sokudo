@@ -2,8 +2,12 @@ cmake_minimum_required(VERSION 3.17)
 project(sokudo_cuda CUDA)
 
 add_library(sokudo_cuda STATIC
-        cuda_test.h
-        cuda_test.cu)
+        cuda_test.cu
+        cuda_helper.h
+        cuda_helper.cu
+        cuda_test.h)
+
+set(CMAKE_CUDA_STANDARD 14)
 
 target_link_libraries(sokudo_cuda cuda cudart)
-add_compile_definitions(SOKUDO_CUDA)
+target_compile_definitions(sokudo_cuda PUBLIC SOKUDO_CUDA)

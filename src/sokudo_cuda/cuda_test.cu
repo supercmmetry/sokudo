@@ -2,21 +2,27 @@
 #include <cuda_runtime.h>
 #include <device_launch_parameters.h>
 
-__global__ void add(int *a, int *b) {
-    int index = threadIdx.x;
+__global__ void add(const int *a, int *b) {
+    auto index = threadIdx.x;
     b[index] += a[index];
 }
 
 
-void cu_add_test(int *a, int *b, int n) {
+CudaAbstractTask cu_add_test(int *a, int *b, int n) {
+    cudaStream_t stream;
+    if (cudaStreamCreate(&stream) != cudaSuccess) {
+        throw CudaException("cudaStreamCreate failed");
+    }
+
     int *da, *db;
     cudaMalloc(&da, n * sizeof(int));
     cudaMalloc(&db, n * sizeof(int));
-    cudaMemcpy(da, a, n * sizeof(int), cudaMemcpyHostToDevice);
-    cudaMemcpy(db, b, n * sizeof(int), cudaMemcpyHostToDevice);
+    cudaMemcpyAsync(da, a, n * sizeof(int), cudaMemcpyHostToDevice, stream);
+    cudaMemcpyAsync(db, b, n * sizeof(int), cudaMemcpyHostToDevice, stream);
 
-    add<<<1, n>>>(da, db);
-    cudaDeviceSynchronize();
+    add<<<1, n, 0, stream>>>(da, db);
 
-    cudaMemcpy(b, db, sizeof(int) * n, cudaMemcpyDeviceToHost);
+    cudaMemcpyAsync(b, db, sizeof(int) * n, cudaMemcpyDeviceToHost, stream);
+
+    return CudaAbstractTask(stream) << da << db;
 }

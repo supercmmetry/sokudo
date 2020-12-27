@@ -5,7 +5,7 @@
 namespace sokudo::opencl::kernels {
     void cl_platform_test();
 
-    sokudo::opencl::CLTask cl_add_test(int *a, int *b, int n);
+    CLTask* cl_add_test(const sokudo::DataBuffer<int> &a, const sokudo::DataBuffer<int> &b);
 }
 
 #endif

@@ -6,7 +6,7 @@
 #include <unordered_map>
 #include <mutex>
 #include <CL/cl2.hpp>
-#include <kernel.h>
+#include <kernel_enums.h>
 #include <errors.h>
 #include <task.h>
 
@@ -61,20 +61,6 @@ namespace sokudo::opencl {
     class KernelProvider {
     public:
         static cl::Kernel get(Kernel kernel);
-    };
-
-    class CLTask : GenericTask {
-    private:
-        cl::CommandQueue _queue;
-    public:
-        CLTask(const cl::CommandQueue& queue) {
-            _queue = queue;
-        }
-
-        void sync() override {
-            _queue.flush();
-            _queue.finish();
-        }
     };
 }
 
