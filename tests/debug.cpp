@@ -3,6 +3,7 @@
 
 class DebugTest : public testing::Test {};
 
+#ifdef SOKUDO_CUDA
 TEST(DebugTest, CudaSample) {
     int *a = new int[10];
     int *b = new int[10];
@@ -21,7 +22,9 @@ TEST(DebugTest, CudaSample) {
         ASSERT_EQ(buf_b[i], i * 2);
     }
 }
+#endif
 
+#ifdef SOKUDO_OPENCL
 TEST(DebugTest, OpenCLSample) {
     int *a = new int[10];
     for (int i = 0; i < 10; i++) {
@@ -40,3 +43,4 @@ TEST(DebugTest, OpenCLSample) {
         ASSERT_EQ(buf_b[i], i * 2);
     }
 }
+#endif

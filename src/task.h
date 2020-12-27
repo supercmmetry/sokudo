@@ -3,7 +3,6 @@
 
 #include <vector>
 #include <shared_mutex>
-#include <kernel_enums.h>
 #include <errors.h>
 
 #ifdef SOKUDO_OPENCL

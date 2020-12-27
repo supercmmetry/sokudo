@@ -1,7 +1,6 @@
 #ifndef SOKUDO_ADD_TEST_H
 #define SOKUDO_ADD_TEST_H
 
-#include <kernel_enums.h>
 #include <task.h>
 
 #ifdef SOKUDO_CUDA

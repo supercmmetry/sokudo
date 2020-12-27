@@ -18,6 +18,8 @@ namespace sokudo::opencl {
     public:
         static cl::Program get(Kernel kernel);
 
+        static void register_kernel(Kernel kernel, const std::string &src);
+
         static void clear();
     };
 

@@ -3,7 +3,8 @@
 
 namespace sokudo {
     enum Kernel {
-        TEST,
+        KERNEL_TEST,
+        KERNEL_MATH_ADD_I64,
     };
 }
 

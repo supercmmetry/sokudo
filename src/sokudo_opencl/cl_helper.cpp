@@ -17,35 +17,28 @@ uint64_t DeviceProvider::_device_index = 0;
 
 cl::Program ProgramProvider::get(sokudo::Kernel kernel) {
     _mutex.lock();
-    if (_program_map.contains(kernel)) {
+    if (!_program_map.contains(kernel)) {
         _mutex.unlock();
-        return _program_map[kernel];
+        throw sokudo::errors::ResolutionException("Failed to load un-registered OpenCL kernel");
     }
-
-    cl::Program program;
-    switch (kernel) {
-        case TEST: {
-            std::string src =
-#include "cl_test.cl"
-            ;
-
-            cl::Context context(DeviceProvider::get());
-            program = cl::Program(context, src);
-            break;
-        }
-        default: throw sokudo::errors::InvalidOperationException("Kernel not found");
-    }
-
-    program.build(SOKUDO_OPENCL_BUILD_OPTIONS);
-    _program_map[kernel] = program;
-
     _mutex.unlock();
-    return program;
+    return _program_map[kernel];
 }
 
 void ProgramProvider::clear() {
     _mutex.lock();
     _program_map.clear();
+    _mutex.unlock();
+}
+
+void ProgramProvider::register_kernel(sokudo::Kernel kernel, const std::string &src) {
+    _mutex.lock();
+    if (!_program_map.contains(kernel)) {
+        cl::Context context(DeviceProvider::get());
+        auto program = cl::Program(context, src);
+        program.build(SOKUDO_OPENCL_BUILD_OPTIONS);
+        _program_map[kernel] = program;
+    }
     _mutex.unlock();
 }
 

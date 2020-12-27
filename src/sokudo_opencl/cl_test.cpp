@@ -25,7 +25,12 @@ void cl_platform_test() {
 }
 
 sokudo::CLTask* kernels::cl_add_test(const sokudo::DataBuffer<int> &a, const sokudo::DataBuffer<int> &b) {
-    auto kernel = KernelProvider::get(sokudo::TEST);
+    // register kernel
+    ProgramProvider::register_kernel(sokudo::KERNEL_TEST,
+                                     #include "cl_test.cl"
+                                     );
+
+    auto kernel = KernelProvider::get(sokudo::KERNEL_TEST);
     auto context = kernel.getInfo<CL_KERNEL_CONTEXT>();
     auto device = context.getInfo<CL_CONTEXT_DEVICES>().front();
 
