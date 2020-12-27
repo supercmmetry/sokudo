@@ -5,7 +5,10 @@ add_library(sokudo STATIC
         sokudo.h
         kernel.h
         errors.h
-        task.h kernel.cpp kernel_enums.h)
+        task.h
+        kernel_enums.h
+        kernels/add_test.h
+        kernels/add_test.cpp)
 
 target_compile_features(sokudo PUBLIC cxx_std_20)
 

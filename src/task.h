@@ -161,6 +161,35 @@ namespace sokudo {
     };
 #endif
 
+    inline TaskExecutor get_fallback_executor(TaskExecutor executor) {
+        auto fallback_executor = executor;
+#if !defined(SOKUDO_CUDA)
+        #if defined(SOKUDO_OPENCL)
+        if (fallback_executor == CUDA) {
+            fallback_executor = OPENCL;
+        }
+#else
+        if (fallback_executor == CUDA) {
+            fallback_executor = CPU;
+        }
+#endif
+#endif
+
+#if !defined(SOKUDO_OPENCL)
+        #if defined(SOKUDO_CUDA)
+        if (fallback_executor == OPENCL) {
+            fallback_executor = CUDA;
+        }
+#else
+        if (fallback_executor == OPENCL) {
+            fallback_executor = CPU;
+        }
+#endif
+#endif
+
+        return fallback_executor;
+    }
+
     class TaskGraph {
 
     };
