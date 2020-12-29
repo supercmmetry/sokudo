@@ -8,7 +8,8 @@ add_library(sokudo STATIC
         task.h
         kernel_enums.h
         kernels/add_test.h
-        kernels/add_test.cpp kernels/math/add.h)
+        kernels/add_test.cpp
+        kernels/blas/level1/add.h kernels/blas/level1/blas_level1.h kernels/blas/blas.h)
 
 target_compile_features(sokudo PUBLIC cxx_std_20)
 

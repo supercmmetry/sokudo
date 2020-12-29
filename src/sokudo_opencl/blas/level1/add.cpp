@@ -2,7 +2,7 @@
 #include <sokudo_opencl/cl_helper.h>
 #include "add.h"
 
-sokudo::CLTask *sokudo::opencl::kernels::blas::cl_math_add_real(
+sokudo::CLTask *sokudo::opencl::kernels::blas::cl_math_add_int(
         const sokudo::DataBuffer<int64_t> &a,
         const sokudo::DataBuffer<int64_t> &b,
         const sokudo::DataBuffer<int64_t> &c
@@ -18,7 +18,7 @@ sokudo::CLTask *sokudo::opencl::kernels::blas::cl_math_add_real(
 
     uint64_t n = a.size();
     auto local_size = kernel.getWorkGroupInfo<CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE>(device);
-    auto global_size = n / local_size + (n % local_size != 0);
+    auto global_size = (n / local_size + (n % local_size != 0)) * local_size;
 
     auto queue = cl::CommandQueue(context, device, CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE);
 
