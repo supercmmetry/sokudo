@@ -18,6 +18,22 @@
 #define SOKUDO_OPENCL_BLAS_DASUM_STRIDE 0x10
 #endif
 
+void sokudo::opencl::kernels::blas::register_sasum() {
+    sokudo::opencl::ProgramProvider::register_kernel(sokudo::KERNEL_BLAS_SASUM,
+
+#include "sasum.cl"
+
+    );
+}
+
+void sokudo::opencl::kernels::blas::register_dasum() {
+    sokudo::opencl::ProgramProvider::register_kernel(sokudo::KERNEL_BLAS_DASUM,
+
+#include "dasum.cl"
+
+    );
+}
+
 sokudo::CLTask *sokudo::opencl::kernels::blas::cl_sasum(
         const sokudo::DataBuffer<float> &x,
         const sokudo::DataValue<uint64_t> &incx,
@@ -26,11 +42,7 @@ sokudo::CLTask *sokudo::opencl::kernels::blas::cl_sasum(
         uint64_t stride
 ) {
     // register kernel
-    sokudo::opencl::ProgramProvider::register_kernel(sokudo::KERNEL_BLAS_SASUM,
-
-#include "sasum.cl"
-
-    );
+    register_sasum();
 
     auto kernel = KernelProvider::get(sokudo::KERNEL_BLAS_SASUM);
     auto context = kernel.getInfo<CL_KERNEL_CONTEXT>();
@@ -75,11 +87,7 @@ sokudo::CLTask *sokudo::opencl::kernels::blas::cl_dasum(
         uint64_t stride
 ) {
     // register kernel
-    sokudo::opencl::ProgramProvider::register_kernel(sokudo::KERNEL_BLAS_DASUM,
-
-#include "dasum.cl"
-
-    );
+    register_dasum();
 
     auto kernel = KernelProvider::get(sokudo::KERNEL_BLAS_DASUM);
     auto context = kernel.getInfo<CL_KERNEL_CONTEXT>();

@@ -23,6 +23,9 @@ namespace sokudo::opencl::kernels::blas {
             uint64_t wgs = 0,
             uint64_t stride = 0
     );
+
+    void register_sasum();
+    void register_dasum();
 }
 
 #endif

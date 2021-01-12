@@ -13,11 +13,14 @@ namespace sokudo::opencl {
     class ProgramProvider {
     private:
         static std::unordered_map<Kernel, cl::Program> _program_map;
+        static std::unordered_map<Kernel, std::string> _src_map;
         static std::mutex _mutex;
     public:
         static cl::Program get(Kernel kernel);
 
         static void register_kernel(Kernel kernel, const std::string &src);
+
+        static void compile(Kernel kernel, const cl::Device &device);
 
         static void clear();
     };
