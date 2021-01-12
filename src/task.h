@@ -7,7 +7,7 @@
 
 #ifdef SOKUDO_OPENCL
 
-#include <CL/cl2.hpp>
+#include <sokudo_opencl/cl_helper.h>
 
 #endif
 
@@ -253,28 +253,28 @@ namespace sokudo {
 
     inline TaskExecutor get_fallback_executor(TaskExecutor executor) {
         auto fallback_executor = executor;
-#if !defined(SOKUDO_CUDA)
-#if defined(SOKUDO_OPENCL)
-        if (fallback_executor == CUDA) {
-            fallback_executor = OPENCL;
-        }
-#else
-        if (fallback_executor == CUDA) {
-            fallback_executor = CPU;
-        }
-#endif
-#endif
 
-#if !defined(SOKUDO_OPENCL)
-#if defined(SOKUDO_CUDA)
+#if defined(SOKUDO_OPENCL) and defined(SOKUDO_CUDA)
+        if (fallback_executor == OPENCL) {
+            if (sokudo::opencl::DeviceProvider::empty()) {
+                fallback_executor = CUDA;
+            }
+        }
+#endif
+#if defined(SOKUDO_OPENCL) and !defined(SOKUDO_CUDA)
+        if (fallback_executor == OPENCL) {
+            if (sokudo::opencl::DeviceProvider::empty()) {
+                fallback_executor = CPU;
+            }
+        }
+#endif
+#if !defined(SOKUDO_OPENCL) and defined(SOKUDO_CUDA)
         if (fallback_executor == OPENCL) {
             fallback_executor = CUDA;
         }
-#else
-        if (fallback_executor == OPENCL) {
-            fallback_executor = CPU;
-        }
 #endif
+#if !defined(SOKUDO_OPENCL) and !defined(SOKUDO_CUDA)
+        fallback_executor = CPU;
 #endif
 
         return fallback_executor;

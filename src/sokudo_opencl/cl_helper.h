@@ -8,7 +8,6 @@
 #include <CL/cl2.hpp>
 #include <kernel_enums.h>
 #include <errors.h>
-#include <task.h>
 
 namespace sokudo::opencl {
     class ProgramProvider {
@@ -57,6 +56,13 @@ namespace sokudo::opencl {
             _device_index = (_device_index + 1) % _devices.size();
             _mutex.unlock();
             return device;
+        }
+
+        static bool empty() {
+            _mutex.lock();
+            bool v = _devices.empty();
+            _mutex.unlock();
+            return v;
         }
     };
 

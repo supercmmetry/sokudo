@@ -24,19 +24,22 @@ private:
     };
 
     void *_stream;
+    void *_cublas_handle;
     CudaAllocation *_top{};
 public:
-    CudaAbstractTask(void *stream);
+    CudaAbstractTask(void *stream, void *cublasHandle = nullptr);
 
     CudaAbstractTask(const CudaAbstractTask &c) : _top(0) {
         _stream = c._stream;
         _top = c._top;
+        _cublas_handle = c._cublas_handle;
     }
 
     CudaAbstractTask &operator=(const CudaAbstractTask &c) {
         if (this != &c) {
             _stream = c._stream;
             _top = c._top;
+            _cublas_handle = c._cublas_handle;
         }
 
         return *this;
@@ -53,6 +56,16 @@ public:
     void destroy();
 
     void sync();
+};
+
+class CudaError {
+public:
+    void operator<<(int err);
+};
+
+class CublasError {
+public:
+    void operator<<(int err);
 };
 
 #endif

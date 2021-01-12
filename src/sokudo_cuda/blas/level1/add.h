@@ -1,4 +1,0 @@
-#ifndef SOKUDO_CUDA_BLAS_LEVEL1_ADD_H
-#define SOKUDO_CUDA_BLAS_LEVEL1_ADD_H
-
-#endif

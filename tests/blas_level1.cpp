@@ -4,7 +4,19 @@
 class BlasLevel1Test : public testing::Test {};
 
 #ifdef SOKUDO_CUDA
+TEST(BlasLevel1Test, CUDASasum) {
+    auto a = new float[1048576];
+    for (int i = 0; i < 1048576; i++) {
+        a[i] = 1.0;
+    }
 
+    auto buf_a = sokudo::DataBuffer(a, 1048576);
+    auto res = sokudo::DataValue((float)0);
+
+    auto task = sokudo::kernels::blas::Sasum<sokudo::CUDA>()(buf_a, res);
+    task->sync();
+    ASSERT_TRUE(res == (float) 1048576.0);
+}
 #endif
 
 #ifdef SOKUDO_OPENCL

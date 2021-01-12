@@ -1,10 +1,10 @@
-#ifndef SOKUDO_BLAS_LEVEL1_ADD_H
-#define SOKUDO_BLAS_LEVEL1_ADD_H
+#ifndef SOKUDO_BLAS_LEVEL1_ASUM_H
+#define SOKUDO_BLAS_LEVEL1_ASUM_H
 #include <task.h>
 
 #ifdef SOKUDO_CUDA
 
-#include <sokudo_cuda/cuda_test.h>
+#include <sokudo_cuda/blas/level1/asum.h>
 
 #endif
 
@@ -16,7 +16,9 @@
 
 namespace sokudo::kernels::blas {
 #ifdef SOKUDO_CUDA
-
+    namespace cuda_wrapper {
+        CUDATask *cuda_sasum(const sokudo::DataBuffer<float> &a, const sokudo::DataValue<float> &res);
+    }
 #endif
 
     template<TaskExecutor executor>
@@ -38,7 +40,7 @@ namespace sokudo::kernels::blas {
 #endif
                 case CUDA:
 #ifdef SOKUDO_CUDA
-                    throw sokudo::errors::ResolutionException("CUDA implementation not found");
+                    return dynamic_cast<Task *>(cuda_wrapper::cuda_sasum(a, res));
 #else
                     throw sokudo::errors::ResolutionException("CUDA implementation not found");
 #endif
