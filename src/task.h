@@ -6,11 +6,15 @@
 #include <errors.h>
 
 #ifdef SOKUDO_OPENCL
+
 #include <CL/cl2.hpp>
+
 #endif
 
 #ifdef SOKUDO_CUDA
+
 #include <sokudo_cuda/cuda_helper.h>
+
 #endif
 
 namespace sokudo {
@@ -87,7 +91,7 @@ namespace sokudo {
             return *this;
         }
 
-        Type& operator[](uint64_t index) {
+        Type &operator[](uint64_t index) {
             if (index >= _size) {
                 throw sokudo::errors::InvalidOperationException("DataBuffer index out of bounds");
             }
@@ -103,11 +107,94 @@ namespace sokudo {
             return _size * sizeof(Type);
         }
 
-        Type* inner() const {
+        Type *inner() const {
             return _data;
         }
 
         ~DataBuffer() {
+            _mutex.lock();
+            if (!*_refs) {
+                delete[] _data;
+                delete _refs;
+            } else {
+                decrement_ref();
+            }
+            _mutex.unlock();
+        }
+    };
+
+    template<class Type>
+    class DataValue {
+    private:
+        Type *_data{};
+        std::shared_mutex _mutex;
+        uint64_t *_refs{};
+
+        inline void increment_ref() {
+            *_refs = *_refs + 1;
+        }
+
+        inline void decrement_ref() {
+            if (*_refs) {
+                *_refs = *_refs - 1;
+            }
+        }
+
+    public:
+        DataValue() {
+            _refs = new uint64_t;
+        }
+
+        explicit DataValue(Type data) : DataValue() {
+            _data = new Type[1];
+            *_data = data;
+        }
+
+        DataValue(const DataValue<Type> &value) {
+            value._mutex.lock();
+            _mutex = value._mutex;
+            _refs = value._refs;
+            _data = value._data;
+
+            increment_ref();
+            _mutex.unlock();
+        }
+
+        DataValue<Type> &operator=(const DataValue<Type> &value) {
+            if (this != &value) {
+                value._mutex.lock();
+                _mutex = value._mutex;
+                _refs = value._refs;
+                _data = value._data;
+
+                increment_ref();
+                _mutex.unlock();
+            }
+
+            return *this;
+        }
+
+        friend bool operator==(const DataValue<Type> &value1, const DataValue<Type> &value2) {
+            return *(value1._data) == *(value2._data);
+        }
+
+        friend bool operator==(const Type &value1, const DataValue<Type> &value2) {
+            return value1 == *(value2._data);
+        }
+
+        [[nodiscard]] uint64_t size() const {
+            return 1;
+        }
+
+        [[nodiscard]] uint64_t bsize() const {
+            return sizeof(Type);
+        }
+
+        Type *inner() const {
+            return _data;
+        }
+
+        ~DataValue() {
             _mutex.lock();
             if (!*_refs) {
                 delete[] _data;
@@ -127,6 +214,7 @@ namespace sokudo {
     };
 
 #ifdef SOKUDO_CUDA
+
     class CUDATask : public Task {
     private:
         CudaAbstractTask _task;
@@ -141,9 +229,11 @@ namespace sokudo {
             _task.destroy();
         }
     };
+
 #endif
 
 #ifdef SOKUDO_OPENCL
+
     class CLTask : public Task {
     private:
         cl::CommandQueue _queue;
@@ -158,12 +248,13 @@ namespace sokudo {
             _queue.finish();
         }
     };
+
 #endif
 
     inline TaskExecutor get_fallback_executor(TaskExecutor executor) {
         auto fallback_executor = executor;
 #if !defined(SOKUDO_CUDA)
-        #if defined(SOKUDO_OPENCL)
+#if defined(SOKUDO_OPENCL)
         if (fallback_executor == CUDA) {
             fallback_executor = OPENCL;
         }
@@ -175,7 +266,7 @@ namespace sokudo {
 #endif
 
 #if !defined(SOKUDO_OPENCL)
-        #if defined(SOKUDO_CUDA)
+#if defined(SOKUDO_CUDA)
         if (fallback_executor == OPENCL) {
             fallback_executor = CUDA;
         }

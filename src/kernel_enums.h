@@ -4,7 +4,7 @@
 namespace sokudo {
     enum Kernel {
         KERNEL_TEST,
-        KERNEL_MATH_ADD_I64,
+        KERNEL_BLAS_SASUM,
     };
 }
 

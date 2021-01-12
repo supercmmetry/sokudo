@@ -10,7 +10,7 @@
 
 #ifdef SOKUDO_OPENCL
 
-#include <sokudo_opencl/blas/level1/add.h>
+#include <sokudo_opencl/blas/level1/asum.h>
 
 #endif
 
@@ -20,11 +20,11 @@ namespace sokudo::kernels::blas {
 #endif
 
     template<TaskExecutor executor>
-    class AddInt {
+    class Sasum {
     public:
-        AddInt() = default;
+        Sasum() = default;
 
-        Task *operator()(const sokudo::DataBuffer<int64_t> &a, const sokudo::DataBuffer<int64_t> &b, const sokudo::DataBuffer<int64_t> &c) const {
+        Task *operator()(const sokudo::DataBuffer<float> &a, const sokudo::DataValue<float> &res) const {
             TaskExecutor fallback_executor = get_fallback_executor(executor);
 
             switch (fallback_executor) {
@@ -32,7 +32,7 @@ namespace sokudo::kernels::blas {
                     throw sokudo::errors::ResolutionException("CPU implementation not found");
                 case OPENCL:
 #ifdef SOKUDO_OPENCL
-                    return dynamic_cast<Task *>(sokudo::opencl::kernels::blas::cl_math_add_int(a, b, c));
+                    return dynamic_cast<Task *>(sokudo::opencl::kernels::blas::cl_sasum(a, res));
 #else
                     throw sokudo::errors::ResolutionException("OpenCL implementation not found");
 #endif
