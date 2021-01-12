@@ -1,6 +1,6 @@
 R"(
 __kernel void run(
-	__global float *a,
+	__global double *a,
 	const unsigned long int s,
 	const unsigned long int n,
 	const unsigned long int m,
@@ -14,7 +14,7 @@ __kernel void run(
 	
 	unsigned long int target = index;
 	unsigned long int j = s;
-	float sum = 0;
+	double sum = 0;
 	while (index < n && j--) {
 		sum += a[index];
 		index += m * incx;

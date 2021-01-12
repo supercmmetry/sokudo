@@ -194,6 +194,10 @@ namespace sokudo {
             return _data;
         }
 
+        Type value() const {
+            return *_data;
+        }
+
         ~DataValue() {
             _mutex.lock();
             if (!*_refs) {
