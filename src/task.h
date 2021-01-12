@@ -1,6 +1,7 @@
 #ifndef SOKUDO_TASK_H
 #define SOKUDO_TASK_H
 
+#include <functional>
 #include <vector>
 #include <shared_mutex>
 #include <errors.h>
@@ -215,6 +216,71 @@ namespace sokudo {
         TaskExecutor _executor = TaskExecutor::CPU;
     public:
         virtual void sync() = 0;
+
+        Task *then(Task *t) {
+            sync();
+            return t;
+        }
+    };
+
+    class TaskGroup {
+    private:
+        std::vector<Task*> _tasks;
+    public:
+        enum TASKGROUP {
+            SYNC
+        };
+        TaskGroup() = default;
+
+        TaskGroup(const TaskGroup &task_group) {
+            _tasks = task_group._tasks;
+        }
+
+        TaskGroup &operator=(const TaskGroup &task_group) {
+            if (this != &task_group) {
+                _tasks = task_group._tasks;
+            }
+
+            return *this;
+        }
+
+        void sync() {
+            for (auto & _task : _tasks) {
+                _task->sync();
+            }
+        }
+
+        TaskGroup &operator<<(Task *task) {
+            _tasks.push_back(task);
+            return *this;
+        }
+
+        TaskGroup &operator<<(TASKGROUP marker) {
+            if (marker == SYNC) {
+                sync();
+            }
+            return *this;
+        }
+
+        TaskGroup &add(Task *task) {
+            _tasks.push_back(task);
+            return *this;
+        }
+
+        TaskGroup &then(TaskGroup& task_group) {
+            sync();
+            return task_group;
+        }
+
+        TaskGroup then(TaskGroup task_group) {
+            sync();
+            return task_group;
+        }
+
+        TaskGroup operator>>(TaskGroup task_group) {
+            sync();
+            return task_group;
+        }
     };
 
 #ifdef SOKUDO_CUDA
@@ -283,10 +349,6 @@ namespace sokudo {
 
         return fallback_executor;
     }
-
-    class TaskGraph {
-
-    };
 }
 
 #endif
