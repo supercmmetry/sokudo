@@ -7,7 +7,7 @@ add_library(sokudo STATIC
         errors.h
         task.h
         kernel_enums.h
-        kernels/blas/level1/asum.h kernels/blas/level1/blas_level1.h kernels/blas/blas.h kernels/blas/level1/asum.cpp)
+        kernels/blas/level1/asum.h kernels/blas/level1/blas_level1.h kernels/blas/blas.h kernels/blas/level1/asum.cpp types.h)
 
 target_compile_features(sokudo PUBLIC cxx_std_20)
 

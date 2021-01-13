@@ -5,9 +5,6 @@
 #include <cstdint>
 
 namespace sokudo::opencl::kernels::blas {
-    /*
-     * Can be used for sasum() and scasum()
-     */
     CLTask *cl_sasum(
             const sokudo::DataBuffer<float> &x,
             const sokudo::DataValue<uint64_t> &incx,
@@ -24,8 +21,17 @@ namespace sokudo::opencl::kernels::blas {
             uint64_t stride = 0
     );
 
+    CLTask *cl_scasum(
+            const sokudo::DataBuffer<float2> &x,
+            const sokudo::DataValue<uint64_t> &incx,
+            const sokudo::DataValue<float> &res,
+            uint64_t wgs = 0,
+            uint64_t stride = 0
+    );
+
     void register_sasum();
     void register_dasum();
+    void register_scasum();
 }
 
 #endif
