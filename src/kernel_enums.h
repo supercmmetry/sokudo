@@ -3,7 +3,7 @@
 
 namespace sokudo {
     enum Kernel {
-        KERNEL_TEST,
+        KERNEL_UNDEFINED,
         KERNEL_BLAS_ASUM,
     };
 }

@@ -44,10 +44,28 @@ void sokudo::opencl::kernels::blas::register_asum() {
     );
 }
 
+void detail(
+        sokudo::CLTask *task,
+        const std::string &name,
+        const std::string &x,
+        const std::string &incx,
+        const std::string &res,
+        uint64_t wgs,
+        uint64_t stride
+) {
+
+    task->set(sokudo::KERNEL_BLAS_ASUM, name);
+    task->params()["x"] = x;
+    task->params()["incx"] = incx;
+    task->params()["res"] = res;
+    task->params()["wgs"] = std::to_string(wgs);
+    task->params()["stride"] = std::to_string(stride);
+}
+
 sokudo::CLTask *sokudo::opencl::kernels::blas::cl_sasum(
-        const sokudo::DataBuffer<float> &x,
-        const sokudo::DataValue<uint64_t> &incx,
-        const sokudo::DataValue<float> &res,
+        const sokudo::Buffer<float> &x,
+        const sokudo::Value<uint64_t> &incx,
+        const sokudo::Value<float> &res,
         uint64_t wgs,
         uint64_t stride
 ) {
@@ -86,13 +104,16 @@ sokudo::CLTask *sokudo::opencl::kernels::blas::cl_sasum(
     }
 
     queue.enqueueReadBuffer(buf_a, CL_FALSE, 0, res.bsize(), res.inner());
-    return new CLTask(queue);
+
+    auto task = new CLTask(queue);
+    detail(task, "BLAS_SASUM", x.name(), incx.name(), res.name(), local_size, s);
+    return task;
 }
 
 sokudo::CLTask *sokudo::opencl::kernels::blas::cl_dasum(
-        const sokudo::DataBuffer<double> &x,
-        const sokudo::DataValue<uint64_t> &incx,
-        const sokudo::DataValue<double> &res,
+        const sokudo::Buffer<double> &x,
+        const sokudo::Value<uint64_t> &incx,
+        const sokudo::Value<double> &res,
         uint64_t wgs,
         uint64_t stride
 ) {
@@ -131,13 +152,16 @@ sokudo::CLTask *sokudo::opencl::kernels::blas::cl_dasum(
     }
 
     queue.enqueueReadBuffer(buf_a, CL_FALSE, 0, res.bsize(), res.inner());
-    return new CLTask(queue);
+
+    auto task = new CLTask(queue);
+    detail(task, "BLAS_DASUM", x.name(), incx.name(), res.name(), local_size, s);
+    return task;
 }
 
 sokudo::CLTask *sokudo::opencl::kernels::blas::cl_scasum(
-        const sokudo::DataBuffer<float2> &x,
-        const sokudo::DataValue<uint64_t> &incx,
-        const sokudo::DataValue<float> &res,
+        const sokudo::Buffer<float2> &x,
+        const sokudo::Value<uint64_t> &incx,
+        const sokudo::Value<float> &res,
         uint64_t wgs,
         uint64_t stride
 ) {
@@ -175,14 +199,15 @@ sokudo::CLTask *sokudo::opencl::kernels::blas::cl_scasum(
     }
 
     queue.enqueueReadBuffer(buf_a, CL_FALSE, 0, res.bsize(), res.inner());
-    return new CLTask(queue);
+    auto task = new CLTask(queue);
+    detail(task, "BLAS_SCASUM", x.name(), incx.name(), res.name(), local_size, s);
+    return task;
 }
 
-sokudo::CLTask *
-sokudo::opencl::kernels::blas::cl_dcasum(
-        const sokudo::DataBuffer<double2> &x,
-        const sokudo::DataValue<uint64_t> &incx,
-        const sokudo::DataValue<double> &res,
+sokudo::CLTask *sokudo::opencl::kernels::blas::cl_dcasum(
+        const sokudo::Buffer<double2> &x,
+        const sokudo::Value<uint64_t> &incx,
+        const sokudo::Value<double> &res,
         uint64_t wgs,
         uint64_t stride
 ) {
@@ -220,5 +245,8 @@ sokudo::opencl::kernels::blas::cl_dcasum(
     }
 
     queue.enqueueReadBuffer(buf_a, CL_FALSE, 0, res.bsize(), res.inner());
-    return new CLTask(queue);
+
+    auto task = new CLTask(queue);
+    detail(task, "BLAS_DCASUM", x.name(), incx.name(), res.name(), local_size, s);
+    return task;
 }

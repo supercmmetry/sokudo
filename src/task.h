@@ -1,9 +1,9 @@
 #ifndef SOKUDO_TASK_H
 #define SOKUDO_TASK_H
 
-#include <functional>
 #include <vector>
 #include <shared_mutex>
+#include <types.h>
 #include <errors.h>
 
 #ifdef SOKUDO_OPENCL
@@ -25,216 +25,54 @@ namespace sokudo {
         CPU
     };
 
-    template<class Type>
-    class DataBuffer {
-    private:
-        Type *_data{};
-        uint64_t _size{};
-        std::shared_mutex _mutex;
-        uint64_t *_refs{};
-
-        inline void increment_ref() {
-            *_refs = *_refs + 1;
-        }
-
-        inline void decrement_ref() {
-            if (*_refs) {
-                *_refs = *_refs - 1;
-            }
-        }
-
-    public:
-        DataBuffer() {
-            _refs = new uint64_t;
-        }
-
-        explicit DataBuffer(std::vector<Type> data) : DataBuffer() {
-            _size = data.size();
-            _data = new Type[_size];
-
-            for (uint64_t i = 0; i < _size; i++) {
-                _data[i] = data[i];
-            }
-        }
-
-        DataBuffer(Type *data, uint64_t size, bool clone = true) : DataBuffer() {
-            _size = size;
-
-            if (clone) {
-                _data = new Type[_size];
-
-                for (uint64_t i = 0; i < _size; i++) {
-                    _data[i] = data[i];
-                }
-            } else {
-                _data = data;
-            }
-        }
-
-        DataBuffer(const DataBuffer<Type> &buffer) {
-            buffer._mutex.lock();
-            _mutex = buffer._mutex;
-            _refs = buffer._refs;
-            _data = buffer._data;
-            _size = buffer._size;
-
-            increment_ref();
-            _mutex.unlock();
-        }
-
-        DataBuffer<Type> &operator=(const DataBuffer<Type> &buffer) {
-            if (this != &buffer) {
-                buffer._mutex.lock();
-                _mutex = buffer._mutex;
-                _refs = buffer._refs;
-                _data = buffer._data;
-                _size = buffer._size;
-
-                increment_ref();
-                _mutex.unlock();
-            }
-
-            return *this;
-        }
-
-        Type &operator[](uint64_t index) {
-            if (index >= _size) {
-                throw sokudo::errors::InvalidOperationException("DataBuffer index out of bounds");
-            }
-
-            return _data[index];
-        }
-
-        [[nodiscard]] uint64_t size() const {
-            return _size;
-        }
-
-        [[nodiscard]] uint64_t bsize() const {
-            return _size * sizeof(Type);
-        }
-
-        Type *inner() const {
-            return _data;
-        }
-
-        ~DataBuffer() {
-            _mutex.lock();
-            if (!*_refs) {
-                delete[] _data;
-                delete _refs;
-            } else {
-                decrement_ref();
-            }
-            _mutex.unlock();
-        }
-    };
-
-    template<class Type>
-    class DataValue {
-    private:
-        Type *_data{};
-        std::shared_mutex _mutex;
-        uint64_t *_refs{};
-
-        inline void increment_ref() {
-            *_refs = *_refs + 1;
-        }
-
-        inline void decrement_ref() {
-            if (*_refs) {
-                *_refs = *_refs - 1;
-            }
-        }
-
-    public:
-        DataValue() {
-            _refs = new uint64_t;
-        }
-
-        explicit DataValue(Type data) : DataValue() {
-            _data = new Type[1];
-            *_data = data;
-        }
-
-        DataValue(const DataValue<Type> &value) {
-            value._mutex.lock();
-            _mutex = value._mutex;
-            _refs = value._refs;
-            _data = value._data;
-
-            increment_ref();
-            _mutex.unlock();
-        }
-
-        DataValue<Type> &operator=(const DataValue<Type> &value) {
-            if (this != &value) {
-                value._mutex.lock();
-                _mutex = value._mutex;
-                _refs = value._refs;
-                _data = value._data;
-
-                increment_ref();
-                _mutex.unlock();
-            }
-
-            return *this;
-        }
-
-        friend bool operator==(const DataValue<Type> &value1, const DataValue<Type> &value2) {
-            return *(value1._data) == *(value2._data);
-        }
-
-        friend bool operator==(const Type &value1, const DataValue<Type> &value2) {
-            return value1 == *(value2._data);
-        }
-
-        [[nodiscard]] uint64_t size() const {
-            return 1;
-        }
-
-        [[nodiscard]] uint64_t bsize() const {
-            return sizeof(Type);
-        }
-
-        Type *inner() const {
-            return _data;
-        }
-
-        Type value() const {
-            return *_data;
-        }
-
-        ~DataValue() {
-            _mutex.lock();
-            if (!*_refs) {
-                delete[] _data;
-                delete _refs;
-            } else {
-                decrement_ref();
-            }
-            _mutex.unlock();
-        }
-    };
-
     class Task {
     protected:
         TaskExecutor _executor = TaskExecutor::CPU;
+        Kernel _kernel = KERNEL_UNDEFINED;
+        std::string _name = "undefined";
+        std::unordered_map<std::string, std::string> _params;
+        std::vector<uint64_t> _input_shape;
+        std::vector<uint64_t> _output_shape;
     public:
         virtual void sync() = 0;
+
+        virtual ~Task() = default;
 
         Task *then(Task *t) {
             sync();
             return t;
         }
+
+        Task *set(
+                Kernel kernel,
+                const std::string &name = "undefined"
+        ) {
+            _kernel = kernel;
+            _name = name;
+            return this;
+        }
+
+        std::unordered_map<std::string, std::string> &params() {
+            return _params;
+        }
+
+        std::vector<uint64_t> &input_shape() {
+            return _input_shape;
+        }
+
+        std::vector<uint64_t> &output_shape() {
+            return _output_shape;
+        }
     };
 
     class TaskGroup {
     private:
-        std::vector<Task*> _tasks;
+        std::vector<Task *> _tasks;
     public:
         enum TASKGROUP {
             SYNC
         };
+
         TaskGroup() = default;
 
         TaskGroup(const TaskGroup &task_group) {
@@ -250,8 +88,9 @@ namespace sokudo {
         }
 
         void sync() {
-            for (auto & _task : _tasks) {
+            for (auto &_task : _tasks) {
                 _task->sync();
+                delete _task;
             }
         }
 
@@ -272,7 +111,7 @@ namespace sokudo {
             return *this;
         }
 
-        TaskGroup &then(TaskGroup& task_group) {
+        TaskGroup &then(TaskGroup &task_group) {
             sync();
             return task_group;
         }

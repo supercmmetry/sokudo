@@ -5,14 +5,18 @@ class TaskGroupTest : public testing::Test {
 };
 
 TEST(TaskGroupTest, TaskGroup1) {
+#ifdef SOKUDO_OPENCL
+    sokudo::opencl::DeviceProvider::load_devices();
+#endif
+
     auto a = new float[1048576];
     for (int i = 0; i < 1048576; i++) {
         a[i] = 1.0;
     }
 
-    auto buf_a = sokudo::DataBuffer(a, 1048576);
-    auto res = sokudo::DataValue<float>(0);
-    auto incx = sokudo::DataValue<uint64_t>(1);
+    auto buf_a = sokudo::Buffer(a, 1048576);
+    auto res = sokudo::Value<float>(0);
+    auto incx = sokudo::Value<uint64_t>(1);
     sokudo::TaskGroup() <<
                         sokudo::kernels::blas::Asum<sokudo::CUDA>()(buf_a, incx, res) <<
                         sokudo::kernels::blas::Asum<sokudo::CUDA>()(buf_a, incx, res) <<

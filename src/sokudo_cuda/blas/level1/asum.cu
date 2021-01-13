@@ -39,7 +39,7 @@ CudaAbstractTask cu_dasum(double *a, double *res, uint64_t n, uint64_t incx) {
     return CudaAbstractTask(stream, handle) << dx;
 }
 
-CudaAbstractTask cu_scasum(float2 *a, float *res, uint64_t n, uint64_t incx) {
+CudaAbstractTask cu_scasum(void *a, float *res, uint64_t n, uint64_t incx) {
     CudaError err;
     CublasError berr;
     cublasHandle_t handle;
@@ -58,7 +58,7 @@ CudaAbstractTask cu_scasum(float2 *a, float *res, uint64_t n, uint64_t incx) {
     return CudaAbstractTask(stream, handle) << dx;
 }
 
-CudaAbstractTask cu_dcasum(double2 *a, double *res, uint64_t n, uint64_t incx) {
+CudaAbstractTask cu_dcasum(void *a, double *res, uint64_t n, uint64_t incx) {
     CudaError err;
     CublasError berr;
     cublasHandle_t handle;

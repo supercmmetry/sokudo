@@ -6,33 +6,33 @@
 
 namespace sokudo::opencl::kernels::blas {
     CLTask *cl_sasum(
-            const sokudo::DataBuffer<float> &x,
-            const sokudo::DataValue<uint64_t> &incx,
-            const sokudo::DataValue<float> &res,
+            const sokudo::Buffer<float> &x,
+            const sokudo::Value<uint64_t> &incx,
+            const sokudo::Value<float> &res,
             uint64_t wgs = 0,
             uint64_t stride = 0
     );
 
     CLTask *cl_dasum(
-            const sokudo::DataBuffer<double> &x,
-            const sokudo::DataValue<uint64_t> &incx,
-            const sokudo::DataValue<double> &res,
+            const sokudo::Buffer<double> &x,
+            const sokudo::Value<uint64_t> &incx,
+            const sokudo::Value<double> &res,
             uint64_t wgs = 0,
             uint64_t stride = 0
     );
 
     CLTask *cl_scasum(
-            const sokudo::DataBuffer<float2> &x,
-            const sokudo::DataValue<uint64_t> &incx,
-            const sokudo::DataValue<float> &res,
+            const sokudo::Buffer<float2> &x,
+            const sokudo::Value<uint64_t> &incx,
+            const sokudo::Value<float> &res,
             uint64_t wgs = 0,
             uint64_t stride = 0
     );
 
     CLTask *cl_dcasum(
-            const sokudo::DataBuffer<double2> &x,
-            const sokudo::DataValue<uint64_t> &incx,
-            const sokudo::DataValue<double> &res,
+            const sokudo::Buffer<double2> &x,
+            const sokudo::Value<uint64_t> &incx,
+            const sokudo::Value<double> &res,
             uint64_t wgs = 0,
             uint64_t stride = 0
     );

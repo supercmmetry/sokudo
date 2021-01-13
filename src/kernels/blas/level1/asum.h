@@ -18,18 +18,18 @@
 
 namespace sokudo::kernels::blas {
 #ifdef SOKUDO_CUDA
-    namespace cuda_wrapper {
-        CUDATask *cuda_sasum(const sokudo::DataBuffer<float> &a, const sokudo::DataValue<uint64_t> &incx,
-                             const sokudo::DataValue<float> &res);
+    namespace cuda_wrapper::asum {
+        CUDATask *cuda_sasum(const sokudo::Buffer<float> &a, const sokudo::Value<uint64_t> &incx,
+                             const sokudo::Value<float> &res);
 
-        CUDATask *cuda_dasum(const sokudo::DataBuffer<double> &a, const sokudo::DataValue<uint64_t> &incx,
-                             const sokudo::DataValue<double> &res);
+        CUDATask *cuda_dasum(const sokudo::Buffer<double> &a, const sokudo::Value<uint64_t> &incx,
+                             const sokudo::Value<double> &res);
 
-        CUDATask *cuda_scasum(const sokudo::DataBuffer<float2> &a, const sokudo::DataValue<uint64_t> &incx,
-                             const sokudo::DataValue<float> &res);
+        CUDATask *cuda_scasum(const sokudo::Buffer<float2> &a, const sokudo::Value<uint64_t> &incx,
+                              const sokudo::Value<float> &res);
 
-        CUDATask *cuda_dcasum(const sokudo::DataBuffer<double2> &a, const sokudo::DataValue<uint64_t> &incx,
-                              const sokudo::DataValue<double> &res);
+        CUDATask *cuda_dcasum(const sokudo::Buffer<double2> &a, const sokudo::Value<uint64_t> &incx,
+                              const sokudo::Value<double> &res);
     }
 #endif
 
@@ -40,9 +40,9 @@ namespace sokudo::kernels::blas {
 
         // sasum
         Task *operator()(
-                const sokudo::DataBuffer<float> &a,
-                const sokudo::DataValue<uint64_t> &incx,
-                const sokudo::DataValue<float> &res
+                const sokudo::Buffer<float> &a,
+                const sokudo::Value<uint64_t> &incx,
+                const sokudo::Value<float> &res
         ) const {
             TaskExecutor fallback_executor = get_fallback_executor(executor);
 
@@ -57,7 +57,7 @@ namespace sokudo::kernels::blas {
 #endif
                 case CUDA:
 #ifdef SOKUDO_CUDA
-                    return dynamic_cast<Task *>(cuda_wrapper::cuda_sasum(a, incx, res));
+                    return dynamic_cast<Task *>(cuda_wrapper::asum::cuda_sasum(a, incx, res));
 #else
                     throw sokudo::errors::ResolutionException("CUDA implementation not found");
 #endif
@@ -68,9 +68,9 @@ namespace sokudo::kernels::blas {
 
         // dasum
         Task *operator()(
-                const sokudo::DataBuffer<double> &a,
-                const sokudo::DataValue<uint64_t> &incx,
-                const sokudo::DataValue<double> &res
+                const sokudo::Buffer<double> &a,
+                const sokudo::Value<uint64_t> &incx,
+                const sokudo::Value<double> &res
         ) const {
             TaskExecutor fallback_executor = get_fallback_executor(executor);
 
@@ -85,7 +85,7 @@ namespace sokudo::kernels::blas {
 #endif
                 case CUDA:
 #ifdef SOKUDO_CUDA
-                    return dynamic_cast<Task *>(cuda_wrapper::cuda_dasum(a, incx, res));
+                    return dynamic_cast<Task *>(cuda_wrapper::asum::cuda_dasum(a, incx, res));
 #else
                     throw sokudo::errors::ResolutionException("CUDA implementation not found");
 #endif
@@ -96,9 +96,9 @@ namespace sokudo::kernels::blas {
 
         //scasum
         Task *operator()(
-                const sokudo::DataBuffer<float2> &a,
-                const sokudo::DataValue<uint64_t> &incx,
-                const sokudo::DataValue<float> &res
+                const sokudo::Buffer<float2> &a,
+                const sokudo::Value<uint64_t> &incx,
+                const sokudo::Value<float> &res
         ) const {
             TaskExecutor fallback_executor = get_fallback_executor(executor);
 
@@ -113,7 +113,7 @@ namespace sokudo::kernels::blas {
 #endif
                 case CUDA:
 #ifdef SOKUDO_CUDA
-                    return dynamic_cast<Task *>(cuda_wrapper::cuda_scasum(a, incx, res));
+                    return dynamic_cast<Task *>(cuda_wrapper::asum::cuda_scasum(a, incx, res));
 #else
                     throw sokudo::errors::ResolutionException("CUDA implementation not found");
 #endif
@@ -124,9 +124,9 @@ namespace sokudo::kernels::blas {
 
         //dcasum
         Task *operator()(
-                const sokudo::DataBuffer<double2> &a,
-                const sokudo::DataValue<uint64_t> &incx,
-                const sokudo::DataValue<double> &res
+                const sokudo::Buffer<double2> &a,
+                const sokudo::Value<uint64_t> &incx,
+                const sokudo::Value<double> &res
         ) const {
             TaskExecutor fallback_executor = get_fallback_executor(executor);
 
@@ -141,7 +141,7 @@ namespace sokudo::kernels::blas {
 #endif
                 case CUDA:
 #ifdef SOKUDO_CUDA
-                    return dynamic_cast<Task *>(cuda_wrapper::cuda_dcasum(a, incx, res));
+                    return dynamic_cast<Task *>(cuda_wrapper::asum::cuda_dcasum(a, incx, res));
 #else
                     throw sokudo::errors::ResolutionException("CUDA implementation not found");
 #endif
