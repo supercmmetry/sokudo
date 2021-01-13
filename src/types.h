@@ -197,11 +197,23 @@ namespace sokudo {
         }
 
         friend bool operator==(const Value<Type> &value1, const Value<Type> &value2) {
-            return *(value1._data) == *(value2._data);
+            value1._mutex->lock();
+            auto lhs = *(value1._data);
+            value1._mutex->unlock();
+
+            value2._mutex->lock();
+            auto rhs = *(value2._data);
+            value2._mutex->unlock();
+
+            return lhs == rhs;
         }
 
         friend bool operator==(const Type &value1, const Value<Type> &value2) {
-            return value1 == *(value2._data);
+            value2._mutex->lock();
+            auto rhs = *(value2._data);
+            value2._mutex->unlock();
+
+            return rhs == value1;
         }
 
         [[nodiscard]] uint64_t size() const {

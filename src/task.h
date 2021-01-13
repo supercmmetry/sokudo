@@ -1,6 +1,7 @@
 #ifndef SOKUDO_TASK_H
 #define SOKUDO_TASK_H
 
+#include <functional>
 #include <vector>
 #include <shared_mutex>
 #include <types.h>
@@ -69,10 +70,6 @@ namespace sokudo {
     private:
         std::vector<Task *> _tasks;
     public:
-        enum TASKGROUP {
-            SYNC
-        };
-
         TaskGroup() = default;
 
         TaskGroup(const TaskGroup &task_group) {
@@ -94,36 +91,14 @@ namespace sokudo {
             }
         }
 
-        TaskGroup &operator<<(Task *task) {
-            _tasks.push_back(task);
-            return *this;
-        }
-
-        TaskGroup &operator<<(TASKGROUP marker) {
-            if (marker == SYNC) {
-                sync();
-            }
-            return *this;
-        }
-
         TaskGroup &add(Task *task) {
             _tasks.push_back(task);
             return *this;
         }
 
-        TaskGroup &then(TaskGroup &task_group) {
+        TaskGroup then(const std::function<TaskGroup ()> &func) {
             sync();
-            return task_group;
-        }
-
-        TaskGroup then(TaskGroup task_group) {
-            sync();
-            return task_group;
-        }
-
-        TaskGroup operator>>(TaskGroup task_group) {
-            sync();
-            return task_group;
+            return func();
         }
     };
 

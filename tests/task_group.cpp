@@ -17,16 +17,6 @@ TEST(TaskGroupTest, TaskGroup1) {
     auto buf_a = sokudo::Buffer(a, 1048576);
     auto res = sokudo::Value<float>(0);
     auto incx = sokudo::Value<uint64_t>(1);
-    sokudo::TaskGroup() <<
-                        sokudo::kernels::blas::Asum<sokudo::CUDA>()(buf_a, incx, res) <<
-                        sokudo::kernels::blas::Asum<sokudo::CUDA>()(buf_a, incx, res) <<
-                        sokudo::kernels::blas::Asum<sokudo::CUDA>()(buf_a, incx, res) >>
-                        sokudo::TaskGroup() <<
-                        sokudo::kernels::blas::Asum<sokudo::OPENCL>()(buf_a, incx, res) <<
-                        sokudo::kernels::blas::Asum<sokudo::CUDA>()(buf_a, incx, res) <<
-                        sokudo::kernels::blas::Asum<sokudo::OPENCL>()(buf_a, incx, res) <<
-                        sokudo::TaskGroup::SYNC;
-
     sokudo::TaskGroup()
             .add(sokudo::kernels::blas::Asum<sokudo::CUDA>()(buf_a, incx, res))
             .add(sokudo::kernels::blas::Asum<sokudo::CUDA>()(buf_a, incx, res))
@@ -35,17 +25,18 @@ TEST(TaskGroupTest, TaskGroup1) {
             .add(sokudo::kernels::blas::Asum<sokudo::CUDA>()(buf_a, incx, res))
             .add(sokudo::kernels::blas::Asum<sokudo::CUDA>()(buf_a, incx, res))
             .add(sokudo::kernels::blas::Asum<sokudo::CUDA>()(buf_a, incx, res))
-            .then(
-                    sokudo::TaskGroup()
-                            .add(sokudo::kernels::blas::Asum<sokudo::OPENCL>()(buf_a, incx, res))
-                            .add(sokudo::kernels::blas::Asum<sokudo::CUDA>()(buf_a, incx, res))
-                            .add(sokudo::kernels::blas::Asum<sokudo::OPENCL>()(buf_a, incx, res))
-                            .then([&]() {
-                                return sokudo::TaskGroup()
-                                        .add(sokudo::kernels::blas::Asum<sokudo::OPENCL>()(buf_a, incx, res))
-                                        .add(sokudo::kernels::blas::Asum<sokudo::CUDA>()(buf_a, incx, res))
-                                        .add(sokudo::kernels::blas::Asum<sokudo::CUDA>()(buf_a, incx, res));
-                            }())
+            .then([&]() -> sokudo::TaskGroup {
+                      return sokudo::TaskGroup()
+                              .add(sokudo::kernels::blas::Asum<sokudo::OPENCL>()(buf_a, incx, res))
+                              .add(sokudo::kernels::blas::Asum<sokudo::CUDA>()(buf_a, incx, res))
+                              .add(sokudo::kernels::blas::Asum<sokudo::OPENCL>()(buf_a, incx, res))
+                              .then([&]() -> sokudo::TaskGroup {
+                                  return sokudo::TaskGroup()
+                                          .add(sokudo::kernels::blas::Asum<sokudo::OPENCL>()(buf_a, incx, res))
+                                          .add(sokudo::kernels::blas::Asum<sokudo::CUDA>()(buf_a, incx, res))
+                                          .add(sokudo::kernels::blas::Asum<sokudo::CUDA>()(buf_a, incx, res));
+                              });
+                  }
             )
             .sync();
 
