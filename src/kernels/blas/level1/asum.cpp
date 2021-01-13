@@ -29,4 +29,11 @@ sokudo::CUDATask *sokudo::kernels::blas::cuda_wrapper::cuda_scasum(
     return new CUDATask(task);
 }
 
+sokudo::CUDATask *sokudo::kernels::blas::cuda_wrapper::cuda_dcasum(const sokudo::DataBuffer<double2> &a,
+                                                                   const sokudo::DataValue<uint64_t> &incx,
+                                                                   const sokudo::DataValue<double> &res) {
+    auto task = cu_dcasum(a.inner(), res.inner(), a.size(), incx.value());
+    return new CUDATask(task);
+}
+
 #endif

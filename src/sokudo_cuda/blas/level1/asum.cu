@@ -51,9 +51,28 @@ CudaAbstractTask cu_scasum(float2 *a, float *res, uint64_t n, uint64_t incx) {
     berr << cublasSetStream_v2(handle, stream);
 
     double *dx;
-    err << cudaMalloc(&dx, n * sizeof(double));
-    err << cudaMemcpyAsync(dx, a, n * sizeof(double), cudaMemcpyHostToDevice, stream);
+    err << cudaMalloc(&dx, n * sizeof(float2));
+    err << cudaMemcpyAsync(dx, a, n * sizeof(float2), cudaMemcpyHostToDevice, stream);
     auto p = n / incx + (n % incx != 0);
     berr << cublasScasum_v2(handle, p, reinterpret_cast<const cuComplex *>(dx), incx, res);
+    return CudaAbstractTask(stream, handle) << dx;
+}
+
+CudaAbstractTask cu_dcasum(double2 *a, double *res, uint64_t n, uint64_t incx) {
+    CudaError err;
+    CublasError berr;
+    cublasHandle_t handle;
+    berr << cublasCreate_v2(&handle);
+
+    cudaStream_t stream;
+    err << cudaStreamCreate(&stream);
+
+    berr << cublasSetStream_v2(handle, stream);
+
+    double *dx;
+    err << cudaMalloc(&dx, n * sizeof(double2));
+    err << cudaMemcpyAsync(dx, a, n * sizeof(double2), cudaMemcpyHostToDevice, stream);
+    auto p = n / incx + (n % incx != 0);
+    berr << cublasDzasum_v2(handle, p, reinterpret_cast<const cuDoubleComplex *>(dx), incx, res);
     return CudaAbstractTask(stream, handle) << dx;
 }

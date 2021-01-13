@@ -29,9 +29,15 @@ namespace sokudo::opencl::kernels::blas {
             uint64_t stride = 0
     );
 
-    void register_sasum();
-    void register_dasum();
-    void register_scasum();
+    CLTask *cl_dcasum(
+            const sokudo::DataBuffer<double2> &x,
+            const sokudo::DataValue<uint64_t> &incx,
+            const sokudo::DataValue<double> &res,
+            uint64_t wgs = 0,
+            uint64_t stride = 0
+    );
+
+    void register_asum();
 }
 
 #endif

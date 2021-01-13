@@ -61,3 +61,8 @@ cl::Kernel KernelProvider::get(sokudo::Kernel kernel) {
     cl::Program program = ProgramProvider::get(kernel);
     return cl::Kernel(program, "run");
 }
+
+cl::Kernel KernelProvider::get(sokudo::Kernel kernel, const std::string &name) {
+    cl::Program program = ProgramProvider::get(kernel);
+    return cl::Kernel(program, name.c_str());
+}

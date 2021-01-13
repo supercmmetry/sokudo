@@ -27,6 +27,9 @@ namespace sokudo::kernels::blas {
 
         CUDATask *cuda_scasum(const sokudo::DataBuffer<float2> &a, const sokudo::DataValue<uint64_t> &incx,
                              const sokudo::DataValue<float> &res);
+
+        CUDATask *cuda_dcasum(const sokudo::DataBuffer<double2> &a, const sokudo::DataValue<uint64_t> &incx,
+                              const sokudo::DataValue<double> &res);
     }
 #endif
 
@@ -111,6 +114,34 @@ namespace sokudo::kernels::blas {
                 case CUDA:
 #ifdef SOKUDO_CUDA
                     return dynamic_cast<Task *>(cuda_wrapper::cuda_scasum(a, incx, res));
+#else
+                    throw sokudo::errors::ResolutionException("CUDA implementation not found");
+#endif
+                default:
+                    throw sokudo::errors::InvalidOperationException("Undefined task executor");
+            }
+        }
+
+        //dcasum
+        Task *operator()(
+                const sokudo::DataBuffer<double2> &a,
+                const sokudo::DataValue<uint64_t> &incx,
+                const sokudo::DataValue<double> &res
+        ) const {
+            TaskExecutor fallback_executor = get_fallback_executor(executor);
+
+            switch (fallback_executor) {
+                case CPU:
+                    throw sokudo::errors::ResolutionException("CPU implementation not found");
+                case OPENCL:
+#ifdef SOKUDO_OPENCL
+                    return dynamic_cast<Task *>(sokudo::opencl::kernels::blas::cl_dcasum(a, incx, res));
+#else
+                    throw sokudo::errors::ResolutionException("OpenCL implementation not found");
+#endif
+                case CUDA:
+#ifdef SOKUDO_CUDA
+                    return dynamic_cast<Task *>(cuda_wrapper::cuda_dcasum(a, incx, res));
 #else
                     throw sokudo::errors::ResolutionException("CUDA implementation not found");
 #endif

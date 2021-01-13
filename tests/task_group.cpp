@@ -27,6 +27,9 @@ TEST(TaskGroupTest, TaskGroup1) {
             .add(sokudo::kernels::blas::Asum<sokudo::CUDA>()(buf_a, incx, res))
             .add(sokudo::kernels::blas::Asum<sokudo::CUDA>()(buf_a, incx, res))
             .add(sokudo::kernels::blas::Asum<sokudo::CUDA>()(buf_a, incx, res))
+            .add(sokudo::kernels::blas::Asum<sokudo::OPENCL>()(buf_a, incx, res))
+            .add(sokudo::kernels::blas::Asum<sokudo::CUDA>()(buf_a, incx, res))
+            .add(sokudo::kernels::blas::Asum<sokudo::CUDA>()(buf_a, incx, res))
             .add(sokudo::kernels::blas::Asum<sokudo::CUDA>()(buf_a, incx, res))
             .then(
                     sokudo::TaskGroup()

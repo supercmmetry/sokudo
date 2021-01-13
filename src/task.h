@@ -57,12 +57,17 @@ namespace sokudo {
             }
         }
 
-        DataBuffer(Type *data, uint64_t size) : DataBuffer() {
+        DataBuffer(Type *data, uint64_t size, bool clone = true) : DataBuffer() {
             _size = size;
-            _data = new Type[_size];
 
-            for (uint64_t i = 0; i < _size; i++) {
-                _data[i] = data[i];
+            if (clone) {
+                _data = new Type[_size];
+
+                for (uint64_t i = 0; i < _size; i++) {
+                    _data[i] = data[i];
+                }
+            } else {
+                _data = data;
             }
         }
 

@@ -72,6 +72,8 @@ namespace sokudo::opencl {
     class KernelProvider {
     public:
         static cl::Kernel get(Kernel kernel);
+
+        static cl::Kernel get(Kernel kernel, const std::string &name);
     };
 }
 
