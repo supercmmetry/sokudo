@@ -2,5 +2,6 @@
 #define SOKUDO_BLAS_LEVEL1_H
 
 #include "asum.h"
+#include "amax.h"
 
 #endif
