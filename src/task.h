@@ -32,8 +32,6 @@ namespace sokudo {
         Kernel _kernel = KERNEL_UNDEFINED;
         std::string _name = "undefined";
         std::unordered_map<std::string, std::string> _params;
-        std::vector<uint64_t> _input_shape;
-        std::vector<uint64_t> _output_shape;
     public:
         virtual void sync() = 0;
 
@@ -55,14 +53,6 @@ namespace sokudo {
 
         std::unordered_map<std::string, std::string> &params() {
             return _params;
-        }
-
-        std::vector<uint64_t> &input_shape() {
-            return _input_shape;
-        }
-
-        std::vector<uint64_t> &output_shape() {
-            return _output_shape;
         }
     };
 
@@ -89,10 +79,21 @@ namespace sokudo {
                 _task->sync();
                 delete _task;
             }
+            _tasks.clear();
         }
 
         TaskGroup &add(Task *task) {
             _tasks.push_back(task);
+            return *this;
+        }
+
+        TaskGroup &operator()(Task *task) {
+            _tasks.push_back(task);
+            return *this;
+        }
+
+        TaskGroup &operator()() {
+            sync();
             return *this;
         }
 
