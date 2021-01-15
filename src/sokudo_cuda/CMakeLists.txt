@@ -5,7 +5,10 @@ add_library(sokudo_cuda STATIC
         cuda_helper.h
         cuda_helper.cu
         blas/level1/asum.h
-        blas/level1/asum.cu)
+        blas/level1/asum.cu
+        blas/level1/amax.h
+        blas/level1/amax.cu
+        )
 
 set(CMAKE_CUDA_STANDARD 14)
 

@@ -63,7 +63,7 @@ void detail(
 
 sokudo::CLTask *
 sokudo::opencl::kernels::blas::cl_samax(const sokudo::Buffer<float> &x, const sokudo::Value<uint64_t> &incx,
-                                        const sokudo::Value<float> &res, uint64_t wgs, uint64_t stride) {
+                                        const sokudo::Value<uint64_t> &res, uint64_t wgs, uint64_t stride) {
     // register kernel
     register_amax();
 
@@ -83,12 +83,15 @@ sokudo::opencl::kernels::blas::cl_samax(const sokudo::Buffer<float> &x, const so
     global_size = (global_size / incx.value() + (global_size % incx.value() != 0));
     global_size = (global_size / local_size + (global_size % local_size != 0)) * local_size;
 
+    cl::Buffer buf_b(context, CL_MEM_READ_WRITE | CL_MEM_HOST_READ_ONLY, global_size * sizeof(uint64_t));
+
     while (m < n) {
         kernel.setArg(0, buf_a);
         kernel.setArg(1, s);
         kernel.setArg(2, n);
         kernel.setArg(3, m);
         kernel.setArg(4, incx.value());
+        kernel.setArg(5, buf_b);
         m *= s;
 
         queue.enqueueNDRangeKernel(kernel, cl::NDRange(0), cl::NDRange(global_size), cl::NDRange(local_size));
@@ -98,7 +101,7 @@ sokudo::opencl::kernels::blas::cl_samax(const sokudo::Buffer<float> &x, const so
         global_size = (global_size / local_size + (global_size % local_size != 0)) * local_size;
     }
 
-    queue.enqueueReadBuffer(buf_a, CL_FALSE, 0, res.bsize(), res.inner());
+    queue.enqueueReadBuffer(buf_b, CL_FALSE, 0, res.bsize(), res.inner());
 
     auto task = new CLTask(queue);
     detail(task, "BLAS_SAMAX", x.name(), incx.name(), res.name(), local_size, s);
@@ -107,7 +110,7 @@ sokudo::opencl::kernels::blas::cl_samax(const sokudo::Buffer<float> &x, const so
 
 sokudo::CLTask *
 sokudo::opencl::kernels::blas::cl_damax(const sokudo::Buffer<double> &x, const sokudo::Value<uint64_t> &incx,
-                                        const sokudo::Value<double> &res, uint64_t wgs, uint64_t stride) {
+                                        const sokudo::Value<uint64_t> &res, uint64_t wgs, uint64_t stride) {
     // register kernel
     register_amax();
 
@@ -127,12 +130,15 @@ sokudo::opencl::kernels::blas::cl_damax(const sokudo::Buffer<double> &x, const s
     global_size = (global_size / incx.value() + (global_size % incx.value() != 0));
     global_size = (global_size / local_size + (global_size % local_size != 0)) * local_size;
 
+    cl::Buffer buf_b(context, CL_MEM_READ_WRITE | CL_MEM_HOST_READ_ONLY, global_size * sizeof(uint64_t));
+
     while (m < n) {
         kernel.setArg(0, buf_a);
         kernel.setArg(1, s);
         kernel.setArg(2, n);
         kernel.setArg(3, m);
         kernel.setArg(4, incx.value());
+        kernel.setArg(5, buf_b);
         m *= s;
 
         queue.enqueueNDRangeKernel(kernel, cl::NDRange(0), cl::NDRange(global_size), cl::NDRange(local_size));
@@ -142,7 +148,7 @@ sokudo::opencl::kernels::blas::cl_damax(const sokudo::Buffer<double> &x, const s
         global_size = (global_size / local_size + (global_size % local_size != 0)) * local_size;
     }
 
-    queue.enqueueReadBuffer(buf_a, CL_FALSE, 0, res.bsize(), res.inner());
+    queue.enqueueReadBuffer(buf_b, CL_FALSE, 0, res.bsize(), res.inner());
 
     auto task = new CLTask(queue);
     detail(task, "BLAS_DAMAX", x.name(), incx.name(), res.name(), local_size, s);
@@ -151,7 +157,7 @@ sokudo::opencl::kernels::blas::cl_damax(const sokudo::Buffer<double> &x, const s
 
 sokudo::CLTask *
 sokudo::opencl::kernels::blas::cl_scamax(const sokudo::Buffer<float2> &x, const sokudo::Value<uint64_t> &incx,
-                                         const sokudo::Value<float> &res, uint64_t wgs, uint64_t stride) {
+                                         const sokudo::Value<uint64_t> &res, uint64_t wgs, uint64_t stride) {
     // register kernel
     register_amax();
 
@@ -170,12 +176,15 @@ sokudo::opencl::kernels::blas::cl_scamax(const sokudo::Buffer<float2> &x, const 
     global_size = (global_size / incx.value() + (global_size % incx.value() != 0));
     global_size = (global_size / local_size + (global_size % local_size != 0)) * local_size;
 
+    cl::Buffer buf_b(context, CL_MEM_READ_WRITE | CL_MEM_HOST_READ_ONLY, global_size * sizeof(uint64_t));
+
     while (m < n) {
         kernel.setArg(0, buf_a);
         kernel.setArg(1, s);
         kernel.setArg(2, n);
         kernel.setArg(3, m);
         kernel.setArg(4, incx.value());
+        kernel.setArg(5, buf_b);
         m *= s;
 
         queue.enqueueNDRangeKernel(kernel, cl::NDRange(0), cl::NDRange(global_size), cl::NDRange(local_size));
@@ -185,7 +194,7 @@ sokudo::opencl::kernels::blas::cl_scamax(const sokudo::Buffer<float2> &x, const 
         global_size = (global_size / local_size + (global_size % local_size != 0)) * local_size;
     }
 
-    queue.enqueueReadBuffer(buf_a, CL_FALSE, 0, res.bsize(), res.inner());
+    queue.enqueueReadBuffer(buf_b, CL_FALSE, 0, res.bsize(), res.inner());
     auto task = new CLTask(queue);
     detail(task, "BLAS_SCAMAX", x.name(), incx.name(), res.name(), local_size, s);
     return task;
@@ -193,7 +202,7 @@ sokudo::opencl::kernels::blas::cl_scamax(const sokudo::Buffer<float2> &x, const 
 
 sokudo::CLTask *
 sokudo::opencl::kernels::blas::cl_dcamax(const sokudo::Buffer<double2> &x, const sokudo::Value<uint64_t> &incx,
-                                         const sokudo::Value<double> &res, uint64_t wgs, uint64_t stride) {
+                                         const sokudo::Value<uint64_t> &res, uint64_t wgs, uint64_t stride) {
     // register kernel
     register_amax();
 
@@ -205,6 +214,7 @@ sokudo::opencl::kernels::blas::cl_dcamax(const sokudo::Buffer<double2> &x, const
 
     auto queue = cl::CommandQueue(context, device, CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE);
     cl::Buffer buf_a(context, CL_MEM_READ_WRITE | CL_MEM_HOST_READ_ONLY | CL_MEM_COPY_HOST_PTR, x.bsize(), x.inner());
+
     uint64_t m = 1;
     uint64_t s = stride == 0 ? SOKUDO_OPENCL_BLAS_DCAMAX_STRIDE : stride;
     auto local_size = wgs == 0 ? SOKUDO_OPENCL_BLAS_DCAMAX_WGS : wgs;
@@ -212,12 +222,14 @@ sokudo::opencl::kernels::blas::cl_dcamax(const sokudo::Buffer<double2> &x, const
     global_size = (global_size / incx.value() + (global_size % incx.value() != 0));
     global_size = (global_size / local_size + (global_size % local_size != 0)) * local_size;
 
+    cl::Buffer buf_b(context, CL_MEM_READ_WRITE | CL_MEM_HOST_READ_ONLY, global_size * sizeof(uint64_t));
     while (m < n) {
         kernel.setArg(0, buf_a);
         kernel.setArg(1, s);
         kernel.setArg(2, n);
         kernel.setArg(3, m);
         kernel.setArg(4, incx.value());
+        kernel.setArg(5, buf_b);
         m *= s;
 
         queue.enqueueNDRangeKernel(kernel, cl::NDRange(0), cl::NDRange(global_size), cl::NDRange(local_size));
@@ -227,7 +239,7 @@ sokudo::opencl::kernels::blas::cl_dcamax(const sokudo::Buffer<double2> &x, const
         global_size = (global_size / local_size + (global_size % local_size != 0)) * local_size;
     }
 
-    queue.enqueueReadBuffer(buf_a, CL_FALSE, 0, res.bsize(), res.inner());
+    queue.enqueueReadBuffer(buf_b, CL_FALSE, 0, res.bsize(), res.inner());
 
     auto task = new CLTask(queue);
     detail(task, "BLAS_DCAMAX", x.name(), incx.name(), res.name(), local_size, s);
