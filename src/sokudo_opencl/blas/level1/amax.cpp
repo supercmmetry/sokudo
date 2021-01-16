@@ -43,7 +43,7 @@ void sokudo::opencl::kernels::blas::register_amax() {
     );
 }
 
-void detail(
+void detail_amax_cl(
         sokudo::CLTask *task,
         const std::string &name,
         const std::string &x,
@@ -92,6 +92,7 @@ sokudo::opencl::kernels::blas::cl_samax(const sokudo::Buffer<float> &x, const so
         kernel.setArg(3, m);
         kernel.setArg(4, incx.value());
         kernel.setArg(5, buf_b);
+
         m *= s;
 
         queue.enqueueNDRangeKernel(kernel, cl::NDRange(0), cl::NDRange(global_size), cl::NDRange(local_size));
@@ -104,7 +105,7 @@ sokudo::opencl::kernels::blas::cl_samax(const sokudo::Buffer<float> &x, const so
     queue.enqueueReadBuffer(buf_b, CL_FALSE, 0, res.bsize(), res.inner());
 
     auto task = new CLTask(queue);
-    detail(task, "BLAS_SAMAX", x.name(), incx.name(), res.name(), local_size, s);
+    detail_amax_cl(task, "BLAS_SAMAX", x.name(), incx.name(), res.name(), local_size, s);
     return task;
 }
 
@@ -151,7 +152,7 @@ sokudo::opencl::kernels::blas::cl_damax(const sokudo::Buffer<double> &x, const s
     queue.enqueueReadBuffer(buf_b, CL_FALSE, 0, res.bsize(), res.inner());
 
     auto task = new CLTask(queue);
-    detail(task, "BLAS_DAMAX", x.name(), incx.name(), res.name(), local_size, s);
+    detail_amax_cl(task, "BLAS_DAMAX", x.name(), incx.name(), res.name(), local_size, s);
     return task;
 }
 
@@ -196,7 +197,7 @@ sokudo::opencl::kernels::blas::cl_scamax(const sokudo::Buffer<float2> &x, const 
 
     queue.enqueueReadBuffer(buf_b, CL_FALSE, 0, res.bsize(), res.inner());
     auto task = new CLTask(queue);
-    detail(task, "BLAS_SCAMAX", x.name(), incx.name(), res.name(), local_size, s);
+    detail_amax_cl(task, "BLAS_SCAMAX", x.name(), incx.name(), res.name(), local_size, s);
     return task;
 }
 
@@ -242,6 +243,6 @@ sokudo::opencl::kernels::blas::cl_dcamax(const sokudo::Buffer<double2> &x, const
     queue.enqueueReadBuffer(buf_b, CL_FALSE, 0, res.bsize(), res.inner());
 
     auto task = new CLTask(queue);
-    detail(task, "BLAS_DCAMAX", x.name(), incx.name(), res.name(), local_size, s);
+    detail_amax_cl(task, "BLAS_DCAMAX", x.name(), incx.name(), res.name(), local_size, s);
     return task;
 }

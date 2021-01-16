@@ -9,25 +9,47 @@ __kernel void samax(
 ) {
 	unsigned long int tid = get_global_id(0);
 	unsigned long int index = tid * s * m * incx;
+	unsigned long int dtx = m / s;
+	unsigned long int itx = tid * m;
+	unsigned long int di = m * incx;
+	
+	
 	if (index >= n) {
 		return;
 	}
 	
 	unsigned long int target = index;
 	unsigned long int j = s;
-	float max = 0;
+	float max = FLT_MIN;
 	unsigned long int i = 0;
-	while (index < n && j--) {
-		float x = a[index];
-		if (x > max) {
-			max = x;
-			i = index;
+	unsigned long int tx = itx;
+	
+	if (m == 1) {
+		while (index < n && j--) {
+			float x = a[index];
+			if (x > max) {
+				max = x;
+				i = index; 
+			}
+			index += di;
 		}
-		index += m * incx;
+		b[tid] = i + 1;
+	} else {
+		i = b[itx];
+		while (index < n && j--) {
+			float x = a[index];
+			if (x > max) {
+				max = x;
+				i = b[tx];
+			}
+			index += di;
+			tx += dtx;
+		}
+		
+		b[itx] = i;
 	}
 	
 	a[target] = max;
-	b[tid] = i;
 }
 
 
@@ -41,25 +63,47 @@ __kernel void damax(
 ) {
 	unsigned long int tid = get_global_id(0);
 	unsigned long int index = tid * s * m * incx;
+	unsigned long int dtx = m / s;
+	unsigned long int itx = tid * m;
+	unsigned long int di = m * incx;
+	
+	
 	if (index >= n) {
 		return;
 	}
 	
 	unsigned long int target = index;
 	unsigned long int j = s;
-	double max = 0;
+	double max = DBL_MIN;
 	unsigned long int i = 0;
-	while (index < n && j--) {
-		double x = a[index];
-		if (x > max) {
-			max = x;
-			i = index;
+	unsigned long int tx = itx;
+	
+	if (m == 1) {
+		while (index < n && j--) {
+			double x = a[index];
+			if (x > max) {
+				max = x;
+				i = index; 
+			}
+			index += di;
 		}
-		index += m * incx;
+		b[tid] = i + 1;
+	} else {
+		i = b[itx];
+		while (index < n && j--) {
+			double x = a[index];
+			if (x > max) {
+				max = x;
+				i = b[tx];
+			}
+			index += di;
+			tx += dtx;
+		}
+		
+		b[itx] = i;
 	}
 	
 	a[target] = max;
-	b[tid] = i;
 }
 
 
@@ -77,28 +121,53 @@ __kernel void scamax(
 ) {
 	unsigned long int tid = get_global_id(0);
 	unsigned long int index = tid * s * m * incx;
+	unsigned long int dtx = m / s;
+	unsigned long int itx = tid * m;
+	unsigned long int di = m * incx;
+	
+	
 	if (index >= n) {
 		return;
 	}
 	
 	unsigned long int target = index;
 	unsigned long int j = s;
-	float max = 0;
+	float max = FLT_MIN;
 	unsigned long int i = 0;
-	while (index < n && j--) {
-		float2 q = a[index];
-		float x = absf(q.x) + absf(q.y);
-		if (x > max) {
-			max = x;
-			i = index;
+	unsigned long int tx = itx;
+	
+	if (m == 1) {
+		while (index < n && j--) {
+			float2 q = a[index];
+			float x = absf(q.x) + absf(q.y);
+			a[index].x = 0;
+			a[index].y = 0;
+			if (x > max) {
+				max = x;
+				i = index; 
+			}
+			index += di;
 		}
-		a[index].x = 0;
-		a[index].y = 0;
-		index += m * incx;
+		b[tid] = i + 1;
+	} else {
+		i = b[itx];
+		while (index < n && j--) {
+			float2 q = a[index];
+			float x = absf(q.x) + absf(q.y);
+			a[index].x = 0;
+			a[index].y = 0;
+			if (x > max) {
+				max = x;
+				i = b[tx];
+			}
+			index += di;
+			tx += dtx;
+		}
+		
+		b[itx] = i;
 	}
 	
 	a[target].x = max;
-	b[tid] = i;
 }
 
 double absd(double x) {
@@ -115,27 +184,52 @@ __kernel void dcamax(
 ) {
 	unsigned long int tid = get_global_id(0);
 	unsigned long int index = tid * s * m * incx;
+	unsigned long int dtx = m / s;
+	unsigned long int itx = tid * m;
+	unsigned long int di = m * incx;
+	
+	
 	if (index >= n) {
 		return;
 	}
 	
 	unsigned long int target = index;
 	unsigned long int j = s;
-	double max = 0;
+	double max = DBL_MIN;
 	unsigned long int i = 0;
-	while (index < n && j--) {
-		double2 q = a[index];
-		double x = = absd(q.x) + absd(q.y);
-		if (x > max) {
-			max = x;
-			i = index;
+	unsigned long int tx = itx;
+	
+	if (m == 1) {
+		while (index < n && j--) {
+			double2 q = a[index];
+			double x = absd(q.x) + absd(q.y);
+			a[index].x = 0;
+			a[index].y = 0;
+			if (x > max) {
+				max = x;
+				i = index; 
+			}
+			index += di;
 		}
-		a[index].x = 0;
-		a[index].y = 0;
-		index += m * incx;
+		b[tid] = i + 1;
+	} else {
+		i = b[itx];
+		while (index < n && j--) {
+			double2 q = a[index];
+			double x = absd(q.x) + absd(q.y);
+			a[index].x = 0;
+			a[index].y = 0;
+			if (x > max) {
+				max = x;
+				i = b[tx];
+			}
+			index += di;
+			tx += dtx;
+		}
+		
+		b[itx] = i;
 	}
 	
 	a[target].x = max;
-	b[tid] = i;
 }
 )"

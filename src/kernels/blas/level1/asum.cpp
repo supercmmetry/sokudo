@@ -2,7 +2,7 @@
 
 #ifdef SOKUDO_CUDA
 
-void detail(
+void detail_asum_cu(
         sokudo::CUDATask *task,
         const std::string &name,
         const std::string &x,
@@ -23,7 +23,7 @@ sokudo::CUDATask *sokudo::kernels::blas::cuda_wrapper::asum::cuda_sasum(
     auto task = cu_sasum(a.inner(), res.inner(), a.size(), incx.value());
 
     auto wtask = new CUDATask(task);
-    detail(wtask, "BLAS_SASUM", a.name(), incx.name(), res.name());
+    detail_asum_cu(wtask, "BLAS_SASUM", a.name(), incx.name(), res.name());
     return wtask;
 }
 
@@ -35,7 +35,7 @@ sokudo::CUDATask *sokudo::kernels::blas::cuda_wrapper::asum::cuda_dasum(
     auto task = cu_dasum(a.inner(), res.inner(), a.size(), incx.value());
 
     auto wtask = new CUDATask(task);
-    detail(wtask, "BLAS_DASUM", a.name(), incx.name(), res.name());
+    detail_asum_cu(wtask, "BLAS_DASUM", a.name(), incx.name(), res.name());
     return wtask;
 }
 
@@ -47,7 +47,7 @@ sokudo::CUDATask *sokudo::kernels::blas::cuda_wrapper::asum::cuda_scasum(
     auto task = cu_scasum(a.inner(), res.inner(), a.size(), incx.value());
 
     auto wtask = new CUDATask(task);
-    detail(wtask, "BLAS_SCASUM", a.name(), incx.name(), res.name());
+    detail_asum_cu(wtask, "BLAS_SCASUM", a.name(), incx.name(), res.name());
     return wtask;
 }
 
@@ -57,7 +57,7 @@ sokudo::CUDATask *sokudo::kernels::blas::cuda_wrapper::asum::cuda_dcasum(const s
     auto task = cu_dcasum(a.inner(), res.inner(), a.size(), incx.value());
 
     auto wtask = new CUDATask(task);
-    detail(wtask, "BLAS_DCASUM", a.name(), incx.name(), res.name());
+    detail_asum_cu(wtask, "BLAS_DCASUM", a.name(), incx.name(), res.name());
     return wtask;
 }
 

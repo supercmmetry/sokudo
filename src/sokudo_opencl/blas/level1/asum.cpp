@@ -44,7 +44,7 @@ void sokudo::opencl::kernels::blas::register_asum() {
     );
 }
 
-void detail(
+void detail_asum_cl(
         sokudo::CLTask *task,
         const std::string &name,
         const std::string &x,
@@ -106,7 +106,7 @@ sokudo::CLTask *sokudo::opencl::kernels::blas::cl_sasum(
     queue.enqueueReadBuffer(buf_a, CL_FALSE, 0, res.bsize(), res.inner());
 
     auto task = new CLTask(queue);
-    detail(task, "BLAS_SASUM", x.name(), incx.name(), res.name(), local_size, s);
+    detail_asum_cl(task, "BLAS_SASUM", x.name(), incx.name(), res.name(), local_size, s);
     return task;
 }
 
@@ -154,7 +154,7 @@ sokudo::CLTask *sokudo::opencl::kernels::blas::cl_dasum(
     queue.enqueueReadBuffer(buf_a, CL_FALSE, 0, res.bsize(), res.inner());
 
     auto task = new CLTask(queue);
-    detail(task, "BLAS_DASUM", x.name(), incx.name(), res.name(), local_size, s);
+    detail_asum_cl(task, "BLAS_DASUM", x.name(), incx.name(), res.name(), local_size, s);
     return task;
 }
 
@@ -200,7 +200,7 @@ sokudo::CLTask *sokudo::opencl::kernels::blas::cl_scasum(
 
     queue.enqueueReadBuffer(buf_a, CL_FALSE, 0, res.bsize(), res.inner());
     auto task = new CLTask(queue);
-    detail(task, "BLAS_SCASUM", x.name(), incx.name(), res.name(), local_size, s);
+    detail_asum_cl(task, "BLAS_SCASUM", x.name(), incx.name(), res.name(), local_size, s);
     return task;
 }
 
@@ -247,6 +247,6 @@ sokudo::CLTask *sokudo::opencl::kernels::blas::cl_dcasum(
     queue.enqueueReadBuffer(buf_a, CL_FALSE, 0, res.bsize(), res.inner());
 
     auto task = new CLTask(queue);
-    detail(task, "BLAS_DCASUM", x.name(), incx.name(), res.name(), local_size, s);
+    detail_asum_cl(task, "BLAS_DCASUM", x.name(), incx.name(), res.name(), local_size, s);
     return task;
 }

@@ -74,7 +74,7 @@ TEST(BlasLevel1Test, CUDADasum2) {
     delete[] a;
 }
 
-TEST(BlasLevel1Test, CUDAScasum) {
+TEST(BlasLevel1Test, CUDAScasum1) {
     auto a = new float2[1048576];
     for (int i = 0; i < 1048576; i++) {
         a[i] = float2{ .x=1.0, .y=-1.0 };
@@ -91,7 +91,7 @@ TEST(BlasLevel1Test, CUDAScasum) {
     delete[] a;
 }
 
-TEST(BlasLevel1Test, CUDADcasum) {
+TEST(BlasLevel1Test, CUDADcasum1) {
     auto a = new double2[1048576];
     for (int i = 0; i < 1048576; i++) {
         a[i] = { 1.0, -1.0 };
@@ -105,6 +105,82 @@ TEST(BlasLevel1Test, CUDADcasum) {
     task->sync();
 
     ASSERT_TRUE(res == 1048576.0);
+    delete[] a;
+}
+
+TEST(BlasLevel1Test, CUDASamax1) {
+    auto a = new float[1048576];
+    for (int i = 0; i < 1048576; i++) {
+        a[i] = (float)(i % 289);
+    }
+
+    auto buf_a = sokudo::Buffer(a, 1048576);
+    auto incx = sokudo::Value<uint64_t>(1);
+    auto res = sokudo::Value<uint64_t>(0);
+
+    auto task = sokudo::kernels::blas::Amax<sokudo::CUDA>()(buf_a, incx, res);
+    task->sync();
+
+    ASSERT_EQ(res.value(), 289);
+
+    delete[] a;
+}
+
+TEST(BlasLevel1Test, CUDADamax1) {
+    auto a = new double[1048576];
+    for (int i = 0; i < 1048576; i++) {
+        a[i] = (double)(i % 1);
+    }
+
+    sokudo::opencl::DeviceProvider::load_devices();
+
+    auto buf_a = sokudo::Buffer(a, 1048576);
+    auto incx = sokudo::Value<uint64_t>(1);
+    auto res = sokudo::Value<uint64_t>(0);
+
+    auto task = sokudo::kernels::blas::Amax<sokudo::CUDA>()(buf_a, incx, res);
+    task->sync();
+
+    ASSERT_EQ(res.value(), 1);
+
+    delete[] a;
+}
+
+TEST(BlasLevel1Test, CUDAScamax1) {
+    sokudo::opencl::DeviceProvider::load_devices();
+
+    auto a = new float2[1048576];
+    for (int i = 0; i < 1048576; i++) {
+        a[i] = float2{ .x=(float)(i % 7), .y=-(float)(i % 9) };
+    }
+
+    auto buf_a = sokudo::Buffer(a, 1048576);
+    auto res = sokudo::Value<uint64_t>(0);
+    auto incx = sokudo::Value<uint64_t>(1);
+
+    auto task = sokudo::kernels::blas::Amax<sokudo::CUDA>()(buf_a, incx, res);
+    task->sync();
+
+    ASSERT_EQ(res.value(), 63);
+    delete[] a;
+}
+
+TEST(BlasLevel1Test, CUDADcamax1) {
+    sokudo::opencl::DeviceProvider::load_devices();
+
+    auto a = new double2[1048576];
+    for (int i = 0; i < 1048576; i++) {
+        a[i] = double2{ .x=(double)(i % 101), .y=-(double)(i % 103) };
+    }
+
+    auto buf_a = sokudo::Buffer(a, 1048576);
+    auto res = sokudo::Value<uint64_t>(0);
+    auto incx = sokudo::Value<uint64_t>(1);
+
+    auto task = sokudo::kernels::blas::Amax<sokudo::CUDA>()(buf_a, incx, res);
+    task->sync();
+
+    ASSERT_EQ(res.value(), 10403);
     delete[] a;
 }
 #endif
@@ -186,7 +262,7 @@ TEST(BlasLevel1Test, OpenCLDasum2) {
     delete[] a;
 }
 
-TEST(BlasLevel1Test, OpenCLScasum) {
+TEST(BlasLevel1Test, OpenCLScasum1) {
     sokudo::opencl::DeviceProvider::load_devices();
 
     auto a = new float2[1048576];
@@ -205,7 +281,7 @@ TEST(BlasLevel1Test, OpenCLScasum) {
     delete[] a;
 }
 
-TEST(BlasLevel1Test, OpenCLDcasum) {
+TEST(BlasLevel1Test, OpenCLDcasum1) {
     sokudo::opencl::DeviceProvider::load_devices();
 
     auto a = new double2[1048576];
@@ -221,6 +297,84 @@ TEST(BlasLevel1Test, OpenCLDcasum) {
     task->sync();
 
     ASSERT_TRUE(res == 1048576.0);
+    delete[] a;
+}
+
+TEST(BlasLevel1Test, OpenCLSamax1) {
+    auto a = new float[1048576];
+    for (int i = 0; i < 1048576; i++) {
+        a[i] = (float)(i % 289);
+    }
+
+    sokudo::opencl::DeviceProvider::load_devices();
+
+    auto buf_a = sokudo::Buffer(a, 1048576);
+    auto incx = sokudo::Value<uint64_t>(1);
+    auto res = sokudo::Value<uint64_t>(0);
+
+    auto task = sokudo::kernels::blas::Amax<sokudo::OPENCL>()(buf_a, incx, res);
+    task->sync();
+
+    ASSERT_EQ(res.value(), 289);
+
+    delete[] a;
+}
+
+TEST(BlasLevel1Test, OpenCLDamax1) {
+    auto a = new double[1048576];
+    for (int i = 0; i < 1048576; i++) {
+        a[i] = (double)(i % 1);
+    }
+
+    sokudo::opencl::DeviceProvider::load_devices();
+
+    auto buf_a = sokudo::Buffer(a, 1048576);
+    auto incx = sokudo::Value<uint64_t>(1);
+    auto res = sokudo::Value<uint64_t>(0);
+
+    auto task = sokudo::kernels::blas::Amax<sokudo::OPENCL>()(buf_a, incx, res);
+    task->sync();
+
+    ASSERT_EQ(res.value(), 1);
+
+    delete[] a;
+}
+
+TEST(BlasLevel1Test, OpenCLScamax1) {
+    sokudo::opencl::DeviceProvider::load_devices();
+
+    auto a = new float2[1048576];
+    for (int i = 0; i < 1048576; i++) {
+        a[i] = float2{ .x=(float)(i % 7), .y=-(float)(i % 9) };
+    }
+
+    auto buf_a = sokudo::Buffer(a, 1048576);
+    auto res = sokudo::Value<uint64_t>(0);
+    auto incx = sokudo::Value<uint64_t>(1);
+
+    auto task = sokudo::kernels::blas::Amax<sokudo::OPENCL>()(buf_a, incx, res);
+    task->sync();
+
+    ASSERT_EQ(res.value(), 63);
+    delete[] a;
+}
+
+TEST(BlasLevel1Test, OpenCLDcamax1) {
+    sokudo::opencl::DeviceProvider::load_devices();
+
+    auto a = new double2[1048576];
+    for (int i = 0; i < 1048576; i++) {
+        a[i] = double2{ .x=(double)(i % 101), .y=-(double)(i % 103) };
+    }
+
+    auto buf_a = sokudo::Buffer(a, 1048576);
+    auto res = sokudo::Value<uint64_t>(0);
+    auto incx = sokudo::Value<uint64_t>(1);
+
+    auto task = sokudo::kernels::blas::Amax<sokudo::OPENCL>()(buf_a, incx, res);
+    task->sync();
+
+    ASSERT_EQ(res.value(), 10403);
     delete[] a;
 }
 

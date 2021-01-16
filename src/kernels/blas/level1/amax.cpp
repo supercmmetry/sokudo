@@ -2,7 +2,7 @@
 
 #ifdef SOKUDO_CUDA
 
-void detail(
+void detail_amax_cu(
         sokudo::CUDATask *task,
         const std::string &name,
         const std::string &x,
@@ -23,7 +23,7 @@ sokudo::CUDATask *sokudo::kernels::blas::cuda_wrapper::amax::cuda_samax(
     auto task = cu_samax(a.inner(), res.inner(), a.size(), incx.value());
 
     auto wtask = new CUDATask(task);
-    detail(wtask, "BLAS_SAMAX", a.name(), incx.name(), res.name());
+    detail_amax_cu(wtask, "BLAS_SAMAX", a.name(), incx.name(), res.name());
     return wtask;
 }
 
@@ -35,7 +35,7 @@ sokudo::CUDATask *sokudo::kernels::blas::cuda_wrapper::amax::cuda_damax(
     auto task = cu_damax(a.inner(), res.inner(), a.size(), incx.value());
 
     auto wtask = new CUDATask(task);
-    detail(wtask, "BLAS_DAMAX", a.name(), incx.name(), res.name());
+    detail_amax_cu(wtask, "BLAS_DAMAX", a.name(), incx.name(), res.name());
     return wtask;
 }
 
@@ -47,7 +47,7 @@ sokudo::CUDATask *sokudo::kernels::blas::cuda_wrapper::amax::cuda_scamax(
     auto task = cu_scamax(a.inner(), res.inner(), a.size(), incx.value());
 
     auto wtask = new CUDATask(task);
-    detail(wtask, "BLAS_SCAMAX", a.name(), incx.name(), res.name());
+    detail_amax_cu(wtask, "BLAS_SCAMAX", a.name(), incx.name(), res.name());
     return wtask;
 }
 
@@ -57,7 +57,7 @@ sokudo::CUDATask *sokudo::kernels::blas::cuda_wrapper::amax::cuda_dcamax(const s
     auto task = cu_dcamax(a.inner(), res.inner(), a.size(), incx.value());
 
     auto wtask = new CUDATask(task);
-    detail(wtask, "BLAS_DCAMAX", a.name(), incx.name(), res.name());
+    detail_amax_cu(wtask, "BLAS_DCAMAX", a.name(), incx.name(), res.name());
     return wtask;
 }
 
