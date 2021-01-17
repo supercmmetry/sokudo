@@ -1,5 +1,5 @@
-#ifndef SOKUDO_OPENCL_BLAS_LEVEL1_ADD_H
-#define SOKUDO_OPENCL_BLAS_LEVEL1_ADD_H
+#ifndef SOKUDO_OPENCL_BLAS_ASUM_H
+#define SOKUDO_OPENCL_BLAS_ASUM_H
 
 #include <task.h>
 #include <cstdint>

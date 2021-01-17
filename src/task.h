@@ -134,7 +134,6 @@ namespace sokudo {
         }
 
         void sync() override {
-            _queue.flush();
             _queue.finish();
         }
     };

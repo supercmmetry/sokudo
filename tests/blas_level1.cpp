@@ -132,8 +132,6 @@ TEST(BlasLevel1Test, CUDADamax1) {
         a[i] = (double)(i % 1);
     }
 
-    sokudo::opencl::DeviceProvider::load_devices();
-
     auto buf_a = sokudo::Buffer(a, 1048576);
     auto incx = sokudo::Value<uint64_t>(1);
     auto res = sokudo::Value<uint64_t>(0);
@@ -147,8 +145,6 @@ TEST(BlasLevel1Test, CUDADamax1) {
 }
 
 TEST(BlasLevel1Test, CUDAScamax1) {
-    sokudo::opencl::DeviceProvider::load_devices();
-
     auto a = new float2[1048576];
     for (int i = 0; i < 1048576; i++) {
         a[i] = float2{ .x=(float)(i % 7), .y=-(float)(i % 9) };
@@ -166,8 +162,6 @@ TEST(BlasLevel1Test, CUDAScamax1) {
 }
 
 TEST(BlasLevel1Test, CUDADcamax1) {
-    sokudo::opencl::DeviceProvider::load_devices();
-
     auto a = new double2[1048576];
     for (int i = 0; i < 1048576; i++) {
         a[i] = double2{ .x=(double)(i % 101), .y=-(double)(i % 103) };
@@ -178,6 +172,76 @@ TEST(BlasLevel1Test, CUDADcamax1) {
     auto incx = sokudo::Value<uint64_t>(1);
 
     auto task = sokudo::kernels::blas::Amax<sokudo::CUDA>()(buf_a, incx, res);
+    task->sync();
+
+    ASSERT_EQ(res.value(), 10403);
+    delete[] a;
+}
+
+TEST(BlasLevel1Test, CUDASamin1) {
+    auto a = new float[1048576];
+    for (int i = 0; i < 1048576; i++) {
+        a[i] = (float)(289 - i % 289);
+    }
+
+    auto buf_a = sokudo::Buffer(a, 1048576);
+    auto incx = sokudo::Value<uint64_t>(1);
+    auto res = sokudo::Value<uint64_t>(0);
+
+    auto task = sokudo::kernels::blas::Amin<sokudo::CUDA>()(buf_a, incx, res);
+    task->sync();
+
+    ASSERT_EQ(res.value(), 289);
+
+    delete[] a;
+}
+
+TEST(BlasLevel1Test, CUDADamin1) {
+    auto a = new double[1048576];
+    for (int i = 0; i < 1048576; i++) {
+        a[i] = (double)(1 - i % 1);
+    }
+
+    auto buf_a = sokudo::Buffer(a, 1048576);
+    auto incx = sokudo::Value<uint64_t>(1);
+    auto res = sokudo::Value<uint64_t>(0);
+
+    auto task = sokudo::kernels::blas::Amin<sokudo::CUDA>()(buf_a, incx, res);
+    task->sync();
+
+    ASSERT_EQ(res.value(), 1);
+
+    delete[] a;
+}
+
+TEST(BlasLevel1Test, CUDAScamin1) {
+    auto a = new float2[1048576];
+    for (int i = 0; i < 1048576; i++) {
+        a[i] = float2{ .x=(float)(7 - i % 7), .y=-(float)(9 - i % 9) };
+    }
+
+    auto buf_a = sokudo::Buffer(a, 1048576);
+    auto res = sokudo::Value<uint64_t>(0);
+    auto incx = sokudo::Value<uint64_t>(1);
+
+    auto task = sokudo::kernels::blas::Amin<sokudo::CUDA>()(buf_a, incx, res);
+    task->sync();
+
+    ASSERT_EQ(res.value(), 63);
+    delete[] a;
+}
+
+TEST(BlasLevel1Test, CUDADcamin1) {
+    auto a = new double2[1048576];
+    for (int i = 0; i < 1048576; i++) {
+        a[i] = double2{ .x=(double)(101 - i % 101), .y=-(double)(103 - i % 103) };
+    }
+
+    auto buf_a = sokudo::Buffer(a, 1048576);
+    auto res = sokudo::Value<uint64_t>(0);
+    auto incx = sokudo::Value<uint64_t>(1);
+
+    auto task = sokudo::kernels::blas::Amin<sokudo::CUDA>()(buf_a, incx, res);
     task->sync();
 
     ASSERT_EQ(res.value(), 10403);
@@ -378,4 +442,79 @@ TEST(BlasLevel1Test, OpenCLDcamax1) {
     delete[] a;
 }
 
+TEST(BlasLevel1Test, OpenCLSamin1) {
+    auto a = new float[1048576];
+    for (int i = 0; i < 1048576; i++) {
+        a[i] = (float)(289 - i % 289);
+    }
+
+    auto buf_a = sokudo::Buffer(a, 1048576);
+    auto incx = sokudo::Value<uint64_t>(1);
+    auto res = sokudo::Value<uint64_t>(0);
+
+    auto task = sokudo::kernels::blas::Amin<sokudo::OPENCL>()(buf_a, incx, res);
+    task->sync();
+
+    ASSERT_EQ(res.value(), 289);
+
+    delete[] a;
+}
+
+TEST(BlasLevel1Test, OpenCLDamin1) {
+    auto a = new double[1048576];
+    for (int i = 0; i < 1048576; i++) {
+        a[i] = (double)(1 - i % 1);
+    }
+
+    sokudo::opencl::DeviceProvider::load_devices();
+
+    auto buf_a = sokudo::Buffer(a, 1048576);
+    auto incx = sokudo::Value<uint64_t>(1);
+    auto res = sokudo::Value<uint64_t>(0);
+
+    auto task = sokudo::kernels::blas::Amin<sokudo::OPENCL>()(buf_a, incx, res);
+    task->sync();
+
+    ASSERT_EQ(res.value(), 1);
+
+    delete[] a;
+}
+
+TEST(BlasLevel1Test, OpenCLScamin1) {
+    sokudo::opencl::DeviceProvider::load_devices();
+
+    auto a = new float2[1048576];
+    for (int i = 0; i < 1048576; i++) {
+        a[i] = float2{ .x=(float)(7 - i % 7), .y=-(float)(9 - i % 9) };
+    }
+
+    auto buf_a = sokudo::Buffer(a, 1048576);
+    auto res = sokudo::Value<uint64_t>(0);
+    auto incx = sokudo::Value<uint64_t>(1);
+
+    auto task = sokudo::kernels::blas::Amin<sokudo::OPENCL>()(buf_a, incx, res);
+    task->sync();
+
+    ASSERT_EQ(res.value(), 63);
+    delete[] a;
+}
+
+TEST(BlasLevel1Test, OpenCLDcamin1) {
+    sokudo::opencl::DeviceProvider::load_devices();
+
+    auto a = new double2[1048576];
+    for (int i = 0; i < 1048576; i++) {
+        a[i] = double2{ .x=(double)(101 - i % 101), .y=-(double)(103 - i % 103) };
+    }
+
+    auto buf_a = sokudo::Buffer(a, 1048576);
+    auto res = sokudo::Value<uint64_t>(0);
+    auto incx = sokudo::Value<uint64_t>(1);
+
+    auto task = sokudo::kernels::blas::Amin<sokudo::OPENCL>()(buf_a, incx, res);
+    task->sync();
+
+    ASSERT_EQ(res.value(), 10403);
+    delete[] a;
+}
 #endif
