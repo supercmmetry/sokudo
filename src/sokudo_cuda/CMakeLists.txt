@@ -8,7 +8,7 @@ add_library(sokudo_cuda STATIC
         blas/level1/asum.cu
         blas/level1/amax.h
         blas/level1/amax.cu
-        )
+        blas/level1/amin.h blas/level1/amin.cu)
 
 set(CMAKE_CUDA_STANDARD 14)
 

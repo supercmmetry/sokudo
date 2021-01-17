@@ -301,14 +301,14 @@ TEST(BlasLevel1Test, OpenCLDcasum1) {
 }
 
 TEST(BlasLevel1Test, OpenCLSamax1) {
-    auto a = new float[1048576];
-    for (int i = 0; i < 1048576; i++) {
+    auto a = new float[2097152];
+    for (int i = 0; i < 2097152; i++) {
         a[i] = (float)(i % 289);
     }
 
     sokudo::opencl::DeviceProvider::load_devices();
 
-    auto buf_a = sokudo::Buffer(a, 1048576);
+    auto buf_a = sokudo::Buffer(a, 2097152);
     auto incx = sokudo::Value<uint64_t>(1);
     auto res = sokudo::Value<uint64_t>(0);
 

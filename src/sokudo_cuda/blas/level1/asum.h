@@ -1,5 +1,5 @@
-#ifndef SOKUDO_CUDA_ASUM_H
-#define SOKUDO_CUDA_ASUM_H
+#ifndef SOKUDO_CUDA_BLAS_ASUM_H
+#define SOKUDO_CUDA_BLAS_ASUM_H
 #include "../../cuda_helper.h"
 
 CudaAbstractTask cu_sasum(float *a, float *res, uint64_t n, uint64_t incx);
