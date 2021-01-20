@@ -247,6 +247,10 @@ TEST(BlasLevel1Test, CUDADcamin1) {
     ASSERT_EQ(res.value(), 10403);
     delete[] a;
 }
+
+TEST(BlasLevel1Test, CUDASaxpy1) {
+
+}
 #endif
 
 #ifdef SOKUDO_OPENCL
