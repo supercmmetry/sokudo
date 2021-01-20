@@ -16,7 +16,7 @@ TEST(BlasLevel1Test, CUDASasum1) {
     auto res = sokudo::Value<float>(0);
     auto incx = sokudo::Value<uint64_t>(1);
 
-    auto task = sokudo::kernels::blas::Asum<sokudo::CUDA>()(buf_a, incx, res);
+    auto task = sokudo::kernels::blas::Asum<sokudo::CUDA>()(1048576, buf_a, incx, res);
     task->sync();
     ASSERT_TRUE(res == (float) 1048576.0);
 
@@ -33,7 +33,7 @@ TEST(BlasLevel1Test, CUDASasum2) {
     auto res = sokudo::Value<float>(0);
     auto incx = sokudo::Value<uint64_t>(2);
 
-    auto task = sokudo::kernels::blas::Asum<sokudo::CUDA>()(buf_a, incx, res);
+    auto task = sokudo::kernels::blas::Asum<sokudo::CUDA>()(524288, buf_a, incx, res);
     task->sync();
     ASSERT_TRUE(res == (float) 524288);
 
@@ -50,7 +50,7 @@ TEST(BlasLevel1Test, CUDADasum1) {
     auto res = sokudo::Value<double>(0);
     auto incx = sokudo::Value<uint64_t>(1);
 
-    auto task = sokudo::kernels::blas::Asum<sokudo::CUDA>()(buf_a, incx, res);
+    auto task = sokudo::kernels::blas::Asum<sokudo::CUDA>()(1048576, buf_a, incx, res);
     task->sync();
 
     ASSERT_TRUE(res == 1048576.0);
@@ -67,7 +67,7 @@ TEST(BlasLevel1Test, CUDADasum2) {
     auto res = sokudo::Value<double>(0);
     auto incx = sokudo::Value<uint64_t>(2);
 
-    auto task = sokudo::kernels::blas::Asum<sokudo::CUDA>()(buf_a, incx, res);
+    auto task = sokudo::kernels::blas::Asum<sokudo::CUDA>()(524288, buf_a, incx, res);
     task->sync();
 
     ASSERT_TRUE(res == 524288.0);
@@ -84,7 +84,7 @@ TEST(BlasLevel1Test, CUDAScasum1) {
     auto res = sokudo::Value<float>(0);
     auto incx = sokudo::Value<uint64_t>(2);
 
-    auto task = sokudo::kernels::blas::Asum<sokudo::CUDA>()(buf_a, incx, res);
+    auto task = sokudo::kernels::blas::Asum<sokudo::CUDA>()(524288, buf_a, incx, res);
     task->sync();
 
     ASSERT_TRUE(res == 1048576.0);
@@ -101,7 +101,7 @@ TEST(BlasLevel1Test, CUDADcasum1) {
     auto res = sokudo::Value<double>(0);
     auto incx = sokudo::Value<uint64_t>(2);
 
-    auto task = sokudo::kernels::blas::Asum<sokudo::CUDA>()(buf_a, incx, res);
+    auto task = sokudo::kernels::blas::Asum<sokudo::CUDA>()(524288, buf_a, incx, res);
     task->sync();
 
     ASSERT_TRUE(res == 1048576.0);
@@ -118,7 +118,7 @@ TEST(BlasLevel1Test, CUDASamax1) {
     auto incx = sokudo::Value<uint64_t>(1);
     auto res = sokudo::Value<uint64_t>(0);
 
-    auto task = sokudo::kernels::blas::Amax<sokudo::CUDA>()(buf_a, incx, res);
+    auto task = sokudo::kernels::blas::Amax<sokudo::CUDA>()(1048576, buf_a, incx, res);
     task->sync();
 
     ASSERT_EQ(res.value(), 289);
@@ -133,10 +133,10 @@ TEST(BlasLevel1Test, CUDADamax1) {
     }
 
     auto buf_a = sokudo::Buffer(a, 1048576);
-    auto incx = sokudo::Value<uint64_t>(1);
+    auto incx = sokudo::Value<uint64_t>(2);
     auto res = sokudo::Value<uint64_t>(0);
 
-    auto task = sokudo::kernels::blas::Amax<sokudo::CUDA>()(buf_a, incx, res);
+    auto task = sokudo::kernels::blas::Amax<sokudo::CUDA>()(524288, buf_a, incx, res);
     task->sync();
 
     ASSERT_EQ(res.value(), 1);
@@ -154,7 +154,7 @@ TEST(BlasLevel1Test, CUDAScamax1) {
     auto res = sokudo::Value<uint64_t>(0);
     auto incx = sokudo::Value<uint64_t>(1);
 
-    auto task = sokudo::kernels::blas::Amax<sokudo::CUDA>()(buf_a, incx, res);
+    auto task = sokudo::kernels::blas::Amax<sokudo::CUDA>()(1048576, buf_a, incx, res);
     task->sync();
 
     ASSERT_EQ(res.value(), 63);
@@ -171,7 +171,7 @@ TEST(BlasLevel1Test, CUDADcamax1) {
     auto res = sokudo::Value<uint64_t>(0);
     auto incx = sokudo::Value<uint64_t>(1);
 
-    auto task = sokudo::kernels::blas::Amax<sokudo::CUDA>()(buf_a, incx, res);
+    auto task = sokudo::kernels::blas::Amax<sokudo::CUDA>()(1048576, buf_a, incx, res);
     task->sync();
 
     ASSERT_EQ(res.value(), 10403);
@@ -188,7 +188,7 @@ TEST(BlasLevel1Test, CUDASamin1) {
     auto incx = sokudo::Value<uint64_t>(1);
     auto res = sokudo::Value<uint64_t>(0);
 
-    auto task = sokudo::kernels::blas::Amin<sokudo::CUDA>()(buf_a, incx, res);
+    auto task = sokudo::kernels::blas::Amin<sokudo::CUDA>()(1048576, buf_a, incx, res);
     task->sync();
 
     ASSERT_EQ(res.value(), 289);
@@ -206,7 +206,7 @@ TEST(BlasLevel1Test, CUDADamin1) {
     auto incx = sokudo::Value<uint64_t>(1);
     auto res = sokudo::Value<uint64_t>(0);
 
-    auto task = sokudo::kernels::blas::Amin<sokudo::CUDA>()(buf_a, incx, res);
+    auto task = sokudo::kernels::blas::Amin<sokudo::CUDA>()(1048576, buf_a, incx, res);
     task->sync();
 
     ASSERT_EQ(res.value(), 1);
@@ -224,7 +224,7 @@ TEST(BlasLevel1Test, CUDAScamin1) {
     auto res = sokudo::Value<uint64_t>(0);
     auto incx = sokudo::Value<uint64_t>(1);
 
-    auto task = sokudo::kernels::blas::Amin<sokudo::CUDA>()(buf_a, incx, res);
+    auto task = sokudo::kernels::blas::Amin<sokudo::CUDA>()(1048576, buf_a, incx, res);
     task->sync();
 
     ASSERT_EQ(res.value(), 63);
@@ -241,7 +241,7 @@ TEST(BlasLevel1Test, CUDADcamin1) {
     auto res = sokudo::Value<uint64_t>(0);
     auto incx = sokudo::Value<uint64_t>(1);
 
-    auto task = sokudo::kernels::blas::Amin<sokudo::CUDA>()(buf_a, incx, res);
+    auto task = sokudo::kernels::blas::Amin<sokudo::CUDA>()(1048576,buf_a, incx, res);
     task->sync();
 
     ASSERT_EQ(res.value(), 10403);
@@ -266,7 +266,7 @@ TEST(BlasLevel1Test, OpenCLSasum1) {
     auto incx = sokudo::Value<uint64_t>(1);
     auto res = sokudo::Value<float>(0);
 
-    auto task = sokudo::kernels::blas::Asum<sokudo::OPENCL>()(buf_a, incx, res);
+    auto task = sokudo::kernels::blas::Asum<sokudo::OPENCL>()(1048576, buf_a, incx, res);
     task->sync();
     ASSERT_TRUE(res == (float) 1048576.0);
 
@@ -285,7 +285,7 @@ TEST(BlasLevel1Test, OpenCLSasum2) {
     auto incx = sokudo::Value<uint64_t>(2);
     auto res = sokudo::Value<float>(0);
 
-    auto task = sokudo::kernels::blas::Asum<sokudo::OPENCL>()(buf_a, incx, res);
+    auto task = sokudo::kernels::blas::Asum<sokudo::OPENCL>()(524288, buf_a, incx, res);
     task->sync();
     ASSERT_TRUE(res == (float) 524288);
 
@@ -304,7 +304,7 @@ TEST(BlasLevel1Test, OpenCLDasum1) {
     auto incx = sokudo::Value<uint64_t>(1);
     auto res = sokudo::Value<double>(0);
 
-    auto task = sokudo::kernels::blas::Asum<sokudo::OPENCL>()(buf_a, incx, res);
+    auto task = sokudo::kernels::blas::Asum<sokudo::OPENCL>()(1048576, buf_a, incx, res);
     task->sync();
     ASSERT_TRUE(res == 1048576.0);
 
@@ -323,7 +323,7 @@ TEST(BlasLevel1Test, OpenCLDasum2) {
     auto res = sokudo::Value<double>(0);
     auto incx = sokudo::Value<uint64_t>(2);
 
-    auto task = sokudo::kernels::blas::Asum<sokudo::OPENCL>()(buf_a, incx, res);
+    auto task = sokudo::kernels::blas::Asum<sokudo::OPENCL>()(524288, buf_a, incx, res);
     task->sync();
 
     ASSERT_TRUE(res == 524288.0);
@@ -342,7 +342,7 @@ TEST(BlasLevel1Test, OpenCLScasum1) {
     auto res = sokudo::Value<float>(0);
     auto incx = sokudo::Value<uint64_t>(2);
 
-    auto task = sokudo::kernels::blas::Asum<sokudo::OPENCL>()(buf_a, incx, res);
+    auto task = sokudo::kernels::blas::Asum<sokudo::OPENCL>()(524288, buf_a, incx, res);
     task->sync();
 
     ASSERT_TRUE(res == (float)1048576.0);
@@ -361,7 +361,7 @@ TEST(BlasLevel1Test, OpenCLDcasum1) {
     auto res = sokudo::Value<double>(0).to_named("VAL_dcasum_1_output");
     auto incx = sokudo::Value<uint64_t>(2).to_named("VAL_dcasum_1_incx");
 
-    auto task = sokudo::kernels::blas::Asum<sokudo::OPENCL>()(buf_a, incx, res);
+    auto task = sokudo::kernels::blas::Asum<sokudo::OPENCL>()(524288, buf_a, incx, res);
     task->sync();
 
     ASSERT_TRUE(res == 1048576.0);
@@ -377,10 +377,10 @@ TEST(BlasLevel1Test, OpenCLSamax1) {
     sokudo::opencl::DeviceProvider::load_devices();
 
     auto buf_a = sokudo::Buffer(a, 2097152);
-    auto incx = sokudo::Value<uint64_t>(1);
+    auto incx = sokudo::Value<uint64_t>(2);
     auto res = sokudo::Value<uint64_t>(0);
 
-    auto task = sokudo::kernels::blas::Amax<sokudo::OPENCL>()(buf_a, incx, res);
+    auto task = sokudo::kernels::blas::Amax<sokudo::OPENCL>()(1048576, buf_a, incx, res);
     task->sync();
 
     ASSERT_EQ(res.value(), 289);
@@ -397,10 +397,10 @@ TEST(BlasLevel1Test, OpenCLDamax1) {
     sokudo::opencl::DeviceProvider::load_devices();
 
     auto buf_a = sokudo::Buffer(a, 1048576);
-    auto incx = sokudo::Value<uint64_t>(1);
+    auto incx = sokudo::Value<uint64_t>(2);
     auto res = sokudo::Value<uint64_t>(0);
 
-    auto task = sokudo::kernels::blas::Amax<sokudo::OPENCL>()(buf_a, incx, res);
+    auto task = sokudo::kernels::blas::Amax<sokudo::OPENCL>()(524288, buf_a, incx, res);
     task->sync();
 
     ASSERT_EQ(res.value(), 1);
@@ -420,7 +420,7 @@ TEST(BlasLevel1Test, OpenCLScamax1) {
     auto res = sokudo::Value<uint64_t>(0);
     auto incx = sokudo::Value<uint64_t>(1);
 
-    auto task = sokudo::kernels::blas::Amax<sokudo::OPENCL>()(buf_a, incx, res);
+    auto task = sokudo::kernels::blas::Amax<sokudo::OPENCL>()(1048576, buf_a, incx, res);
     task->sync();
 
     ASSERT_EQ(res.value(), 63);
@@ -439,7 +439,7 @@ TEST(BlasLevel1Test, OpenCLDcamax1) {
     auto res = sokudo::Value<uint64_t>(0);
     auto incx = sokudo::Value<uint64_t>(1);
 
-    auto task = sokudo::kernels::blas::Amax<sokudo::OPENCL>()(buf_a, incx, res);
+    auto task = sokudo::kernels::blas::Amax<sokudo::OPENCL>()(1048576, buf_a, incx, res);
     task->sync();
 
     ASSERT_EQ(res.value(), 10403);
@@ -456,7 +456,7 @@ TEST(BlasLevel1Test, OpenCLSamin1) {
     auto incx = sokudo::Value<uint64_t>(1);
     auto res = sokudo::Value<uint64_t>(0);
 
-    auto task = sokudo::kernels::blas::Amin<sokudo::OPENCL>()(buf_a, incx, res);
+    auto task = sokudo::kernels::blas::Amin<sokudo::OPENCL>()(1048576, buf_a, incx, res);
     task->sync();
 
     ASSERT_EQ(res.value(), 289);
@@ -476,7 +476,7 @@ TEST(BlasLevel1Test, OpenCLDamin1) {
     auto incx = sokudo::Value<uint64_t>(1);
     auto res = sokudo::Value<uint64_t>(0);
 
-    auto task = sokudo::kernels::blas::Amin<sokudo::OPENCL>()(buf_a, incx, res);
+    auto task = sokudo::kernels::blas::Amin<sokudo::OPENCL>()(1048576, buf_a, incx, res);
     task->sync();
 
     ASSERT_EQ(res.value(), 1);
@@ -496,7 +496,7 @@ TEST(BlasLevel1Test, OpenCLScamin1) {
     auto res = sokudo::Value<uint64_t>(0);
     auto incx = sokudo::Value<uint64_t>(1);
 
-    auto task = sokudo::kernels::blas::Amin<sokudo::OPENCL>()(buf_a, incx, res);
+    auto task = sokudo::kernels::blas::Amin<sokudo::OPENCL>()(1048576, buf_a, incx, res);
     task->sync();
 
     ASSERT_EQ(res.value(), 63);
@@ -515,7 +515,7 @@ TEST(BlasLevel1Test, OpenCLDcamin1) {
     auto res = sokudo::Value<uint64_t>(0);
     auto incx = sokudo::Value<uint64_t>(1);
 
-    auto task = sokudo::kernels::blas::Amin<sokudo::OPENCL>()(buf_a, incx, res);
+    auto task = sokudo::kernels::blas::Amin<sokudo::OPENCL>()(1048576, buf_a, incx, res);
     task->sync();
 
     ASSERT_EQ(res.value(), 10403);

@@ -9,15 +9,15 @@ __kernel void samax(
 ) {
 	unsigned long int tid = get_global_id(0);
 	unsigned long int index = tid * s * m * incx;
-	unsigned long int dtx = m / s;
-	unsigned long int itx = tid * m;
-	unsigned long int di = m * incx;
+	unsigned long int ulim = n * incx;
 	
-	
-	if (index >= n) {
+	if (index >= ulim) {
 		return;
 	}
 	
+	unsigned long int dtx = m / s;
+	unsigned long int itx = tid * m;
+	unsigned long int di = m * incx;
 	unsigned long int target = index;
 	unsigned long int j = s;
 	float max = FLT_MIN;
@@ -25,7 +25,7 @@ __kernel void samax(
 	unsigned long int tx = itx;
 	
 	if (m == 1) {
-		while (index < n && j--) {
+		while (index < ulim && j--) {
 			float x = a[index];
 			if (x > max) {
 				max = x;
@@ -36,7 +36,7 @@ __kernel void samax(
 		b[tid] = i + 1;
 	} else {
 		i = b[itx];
-		while (index < n && j--) {
+		while (index < ulim && j--) {
 			float x = a[index];
 			if (x > max) {
 				max = x;
@@ -61,16 +61,17 @@ __kernel void damax(
 	const unsigned long int incx,
 	__global unsigned long int *b
 ) {
-	unsigned long int tid = get_global_id(0);
+unsigned long int tid = get_global_id(0);
 	unsigned long int index = tid * s * m * incx;
+	unsigned long int ulim = n * incx;
+	
+	if (index >= ulim) {
+		return;
+	}
+	
 	unsigned long int dtx = m / s;
 	unsigned long int itx = tid * m;
 	unsigned long int di = m * incx;
-	
-	
-	if (index >= n) {
-		return;
-	}
 	
 	unsigned long int target = index;
 	unsigned long int j = s;
@@ -79,7 +80,7 @@ __kernel void damax(
 	unsigned long int tx = itx;
 	
 	if (m == 1) {
-		while (index < n && j--) {
+		while (index < ulim && j--) {
 			double x = a[index];
 			if (x > max) {
 				max = x;
@@ -90,7 +91,7 @@ __kernel void damax(
 		b[tid] = i + 1;
 	} else {
 		i = b[itx];
-		while (index < n && j--) {
+		while (index < ulim && j--) {
 			double x = a[index];
 			if (x > max) {
 				max = x;
@@ -121,14 +122,15 @@ __kernel void scamax(
 ) {
 	unsigned long int tid = get_global_id(0);
 	unsigned long int index = tid * s * m * incx;
+	unsigned long int ulim = n * incx;
+	
+	if (index >= ulim) {
+		return;
+	}
+	
 	unsigned long int dtx = m / s;
 	unsigned long int itx = tid * m;
 	unsigned long int di = m * incx;
-	
-	
-	if (index >= n) {
-		return;
-	}
 	
 	unsigned long int target = index;
 	unsigned long int j = s;
@@ -137,7 +139,7 @@ __kernel void scamax(
 	unsigned long int tx = itx;
 	
 	if (m == 1) {
-		while (index < n && j--) {
+		while (index < ulim && j--) {
 			float2 q = a[index];
 			float x = absf(q.x) + absf(q.y);
 			a[index].x = 0;
@@ -151,7 +153,7 @@ __kernel void scamax(
 		b[tid] = i + 1;
 	} else {
 		i = b[itx];
-		while (index < n && j--) {
+		while (index < ulim && j--) {
 			float2 q = a[index];
 			float x = absf(q.x) + absf(q.y);
 			a[index].x = 0;
@@ -184,14 +186,15 @@ __kernel void dcamax(
 ) {
 	unsigned long int tid = get_global_id(0);
 	unsigned long int index = tid * s * m * incx;
+	unsigned long int ulim = n * incx;
+	
+	if (index >= ulim) {
+		return;
+	}
+	
 	unsigned long int dtx = m / s;
 	unsigned long int itx = tid * m;
 	unsigned long int di = m * incx;
-	
-	
-	if (index >= n) {
-		return;
-	}
 	
 	unsigned long int target = index;
 	unsigned long int j = s;
@@ -200,7 +203,7 @@ __kernel void dcamax(
 	unsigned long int tx = itx;
 	
 	if (m == 1) {
-		while (index < n && j--) {
+		while (index < ulim && j--) {
 			double2 q = a[index];
 			double x = absd(q.x) + absd(q.y);
 			a[index].x = 0;
@@ -214,7 +217,7 @@ __kernel void dcamax(
 		b[tid] = i + 1;
 	} else {
 		i = b[itx];
-		while (index < n && j--) {
+		while (index < ulim && j--) {
 			double2 q = a[index];
 			double x = absd(q.x) + absd(q.y);
 			a[index].x = 0;

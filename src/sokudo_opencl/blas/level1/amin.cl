@@ -9,14 +9,15 @@ __kernel void samin(
 ) {
 	unsigned long int tid = get_global_id(0);
 	unsigned long int index = tid * s * m * incx;
+	unsigned long int ulim = n * incx;
+	
+	if (index >= ulim) {
+		return;
+	}
+	
 	unsigned long int dtx = m / s;
 	unsigned long int itx = tid * m;
 	unsigned long int di = m * incx;
-	
-	
-	if (index >= n) {
-		return;
-	}
 	
 	unsigned long int target = index;
 	unsigned long int j = s;
@@ -25,7 +26,7 @@ __kernel void samin(
 	unsigned long int tx = itx;
 	
 	if (m == 1) {
-		while (index < n && j--) {
+		while (index < ulim && j--) {
 			float x = a[index];
 			if (x < min) {
 				min = x;
@@ -36,7 +37,7 @@ __kernel void samin(
 		b[tid] = i + 1;
 	} else {
 		i = b[itx];
-		while (index < n && j--) {
+		while (index < ulim && j--) {
 			float x = a[index];
 			if (x < min) {
 				min = x;
@@ -63,13 +64,15 @@ __kernel void damin(
 ) {
 	unsigned long int tid = get_global_id(0);
 	unsigned long int index = tid * s * m * incx;
+	unsigned long int ulim = n * incx;
+	
+	if (index >= ulim) {
+		return;
+	}
+	
 	unsigned long int dtx = m / s;
 	unsigned long int itx = tid * m;
 	unsigned long int di = m * incx;
-	
-	if (index >= n) {
-		return;
-	}
 	
 	unsigned long int target = index;
 	unsigned long int j = s;
@@ -78,7 +81,7 @@ __kernel void damin(
 	unsigned long int tx = itx;
 	
 	if (m == 1) {
-		while (index < n && j--) {
+		while (index < ulim && j--) {
 			double x = a[index];
 			if (x < min) {
 				min = x;
@@ -89,7 +92,7 @@ __kernel void damin(
 		b[tid] = i + 1;
 	} else {
 		i = b[itx];
-		while (index < n && j--) {
+		while (index < ulim && j--) {
 			double x = a[index];
 			if (x < min) {
 				min = x;
@@ -120,14 +123,15 @@ __kernel void scamin(
 ) {
 	unsigned long int tid = get_global_id(0);
 	unsigned long int index = tid * s * m * incx;
+	unsigned long int ulim = n * incx;
+	
+	if (index >= ulim) {
+		return;
+	}
+	
 	unsigned long int dtx = m / s;
 	unsigned long int itx = tid * m;
 	unsigned long int di = m * incx;
-	
-	
-	if (index >= n) {
-		return;
-	}
 	
 	unsigned long int target = index;
 	unsigned long int j = s;
@@ -136,7 +140,7 @@ __kernel void scamin(
 	unsigned long int tx = itx;
 	
 	if (m == 1) {
-		while (index < n && j--) {
+		while (index < ulim && j--) {
 			float2 q = a[index];
 			float x = absf(q.x) + absf(q.y);
 			a[index].x = 0;
@@ -150,7 +154,7 @@ __kernel void scamin(
 		b[tid] = i + 1;
 	} else {
 		i = b[itx];
-		while (index < n && j--) {
+		while (index < ulim && j--) {
 			float2 q = a[index];
 			float x = absf(q.x) + absf(q.y);
 			a[index].x = 0;
@@ -183,14 +187,15 @@ __kernel void dcamin(
 ) {
 	unsigned long int tid = get_global_id(0);
 	unsigned long int index = tid * s * m * incx;
+	unsigned long int ulim = n * incx;
+	
+	if (index >= ulim) {
+		return;
+	}
+	
 	unsigned long int dtx = m / s;
 	unsigned long int itx = tid * m;
 	unsigned long int di = m * incx;
-	
-	
-	if (index >= n) {
-		return;
-	}
 	
 	unsigned long int target = index;
 	unsigned long int j = s;
@@ -199,7 +204,7 @@ __kernel void dcamin(
 	unsigned long int tx = itx;
 	
 	if (m == 1) {
-		while (index < n && j--) {
+		while (index < ulim && j--) {
 			double2 q = a[index];
 			double x = absd(q.x) + absd(q.y);
 			a[index].x = 0;
@@ -213,7 +218,7 @@ __kernel void dcamin(
 		b[tid] = i + 1;
 	} else {
 		i = b[itx];
-		while (index < n && j--) {
+		while (index < ulim && j--) {
 			double2 q = a[index];
 			double x = absd(q.x) + absd(q.y);
 			a[index].x = 0;

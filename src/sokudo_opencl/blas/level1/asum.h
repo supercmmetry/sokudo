@@ -6,6 +6,7 @@
 
 namespace sokudo::opencl::kernels::blas {
     CLTask *cl_sasum(
+            const sokudo::Value<uint64_t> &n,
             const sokudo::Buffer<float> &x,
             const sokudo::Value<uint64_t> &incx,
             const sokudo::Value<float> &res,
@@ -14,6 +15,7 @@ namespace sokudo::opencl::kernels::blas {
     );
 
     CLTask *cl_dasum(
+            const sokudo::Value<uint64_t> &n,
             const sokudo::Buffer<double> &x,
             const sokudo::Value<uint64_t> &incx,
             const sokudo::Value<double> &res,
@@ -22,6 +24,7 @@ namespace sokudo::opencl::kernels::blas {
     );
 
     CLTask *cl_scasum(
+            const sokudo::Value<uint64_t> &n,
             const sokudo::Buffer<float2> &x,
             const sokudo::Value<uint64_t> &incx,
             const sokudo::Value<float> &res,
@@ -30,6 +33,7 @@ namespace sokudo::opencl::kernels::blas {
     );
 
     CLTask *cl_dcasum(
+            const sokudo::Value<uint64_t> &n,
             const sokudo::Buffer<double2> &x,
             const sokudo::Value<uint64_t> &incx,
             const sokudo::Value<double> &res,

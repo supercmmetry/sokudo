@@ -6,7 +6,8 @@ namespace sokudo {
         KERNEL_UNDEFINED,
         KERNEL_BLAS_ASUM,
         KERNEL_BLAS_AMAX,
-        KERNEL_BLAS_AMIN
+        KERNEL_BLAS_AMIN,
+        KERNEL_BLAS_AXPY
     };
 }
 

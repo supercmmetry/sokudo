@@ -8,16 +8,19 @@ __kernel void sasum(
 ) {
 	unsigned long int tid = get_global_id(0);
 	unsigned long int index = tid * s * m * incx;
-	if (index >= n) {
+	unsigned long int ulim = n * incx;
+	
+	if (index >= ulim) {
 		return;
 	}
 	
+	unsigned long int di = m * incx;
 	unsigned long int target = index;
 	unsigned long int j = s;
 	float sum = 0;
-	while (index < n && j--) {
+	while (index < ulim && j--) {
 		sum += a[index];
-		index += m * incx;
+		index += di;
 	}
 	
 	a[target] = sum;
@@ -33,16 +36,19 @@ __kernel void dasum(
 ) {
 	unsigned long int tid = get_global_id(0);
 	unsigned long int index = tid * s * m * incx;
-	if (index >= n) {
+	unsigned long int ulim = n * incx;
+	
+	if (index >= ulim) {
 		return;
 	}
 	
+	unsigned long int di = m * incx;
 	unsigned long int target = index;
 	unsigned long int j = s;
 	double sum = 0;
-	while (index < n && j--) {
+	while (index < ulim && j--) {
 		sum += a[index];
-		index += m * incx;
+		index += di;
 	}
 	
 	a[target] = sum;
@@ -62,19 +68,21 @@ __kernel void scasum(
 ) {
 	unsigned long int tid = get_global_id(0);
 	unsigned long int index = tid * s * m * incx;
-	if (index >= n) {
+	unsigned long int ulim = n * incx;
+	if (index >= ulim) {
 		return;
 	}
 	
+	unsigned long int di = m * incx;
 	unsigned long int target = index;
 	unsigned long int j = s;
 	float sum = 0;
-	while (index < n && j--) {
+	while (index < ulim && j--) {
 		float2 q = a[index];
 		sum += absf(q.x) + absf(q.y);
 		a[index].x = 0;
 		a[index].y = 0;
-		index += m * incx;
+		index += di;
 	}
 	
 	a[target].x = sum;
@@ -93,19 +101,22 @@ __kernel void dcasum(
 ) {
 	unsigned long int tid = get_global_id(0);
 	unsigned long int index = tid * s * m * incx;
-	if (index >= n) {
+	unsigned long int ulim = n * incx;
+	
+	if (index >= ulim) {
 		return;
 	}
 	
+	unsigned long int di = m * incx;
 	unsigned long int target = index;
 	unsigned long int j = s;
 	double sum = 0;
-	while (index < n && j--) {
+	while (index < ulim && j--) {
 		double2 q = a[index];
 		sum += absd(q.x) + absd(q.y);
 		a[index].x = 0;
 		a[index].y = 0;
-		index += m * incx;
+		index += di;
 	}
 	
 	a[target].x = sum;

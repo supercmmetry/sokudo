@@ -6,6 +6,7 @@
 
 namespace sokudo::opencl::kernels::blas {
     CLTask *cl_samax(
+            const sokudo::Value<uint64_t> &n,
             const sokudo::Buffer<float> &x,
             const sokudo::Value<uint64_t> &incx,
             const sokudo::Value<uint64_t> &res,
@@ -14,6 +15,7 @@ namespace sokudo::opencl::kernels::blas {
     );
 
     CLTask *cl_damax(
+            const sokudo::Value<uint64_t> &n,
             const sokudo::Buffer<double> &x,
             const sokudo::Value<uint64_t> &incx,
             const sokudo::Value<uint64_t> &res,
@@ -22,6 +24,7 @@ namespace sokudo::opencl::kernels::blas {
     );
 
     CLTask *cl_scamax(
+            const sokudo::Value<uint64_t> &n,
             const sokudo::Buffer<float2> &x,
             const sokudo::Value<uint64_t> &incx,
             const sokudo::Value<uint64_t> &res,
@@ -30,6 +33,7 @@ namespace sokudo::opencl::kernels::blas {
     );
 
     CLTask *cl_dcamax(
+            const sokudo::Value<uint64_t> &n,
             const sokudo::Buffer<double2> &x,
             const sokudo::Value<uint64_t> &incx,
             const sokudo::Value<uint64_t> &res,

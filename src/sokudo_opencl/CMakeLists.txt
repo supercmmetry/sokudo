@@ -8,7 +8,9 @@ add_library(sokudo_opencl STATIC
         blas/level1/asum.cpp
         blas/level1/amax.h
         blas/level1/amax.cpp
-        blas/level1/amin.h blas/level1/amin.cpp)
+        blas/level1/amin.h
+        blas/level1/amin.cpp
+        blas/level1/axpy.h blas/level1/axpy.cpp)
 
 target_link_libraries(sokudo_opencl OpenCL)
 target_compile_definitions(sokudo_opencl PUBLIC SOKUDO_OPENCL CL_HPP_ENABLE_EXCEPTIONS)

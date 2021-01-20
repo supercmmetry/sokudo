@@ -165,7 +165,7 @@ namespace sokudo {
             _mutex = std::make_shared<std::mutex>();
         }
 
-        explicit Value(Type data) : Value() {
+        Value(Type data) : Value() {
             _data = new Type[1];
             *_data = data;
         }
@@ -193,6 +193,13 @@ namespace sokudo {
                 _mutex->unlock();
             }
 
+            return *this;
+        }
+
+        Value<Type> &operator=(const Type &value) {
+            _mutex->lock();
+            *_data = value;
+            _mutex->unlock();
             return *this;
         }
 

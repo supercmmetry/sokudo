@@ -19,16 +19,20 @@
 namespace sokudo::kernels::blas {
 #ifdef SOKUDO_CUDA
     namespace cuda_wrapper::amax {
-        CUDATask *cuda_samax(const sokudo::Buffer<float> &a, const sokudo::Value<uint64_t> &incx,
+        CUDATask *cuda_samax(const sokudo::Value<uint64_t> &n, const sokudo::Buffer<float> &x,
+                             const sokudo::Value<uint64_t> &incx,
                              const sokudo::Value<uint64_t> &res);
 
-        CUDATask *cuda_damax(const sokudo::Buffer<double> &a, const sokudo::Value<uint64_t> &incx,
+        CUDATask *cuda_damax(const sokudo::Value<uint64_t> &n, const sokudo::Buffer<double> &x,
+                             const sokudo::Value<uint64_t> &incx,
                              const sokudo::Value<uint64_t> &res);
 
-        CUDATask *cuda_scamax(const sokudo::Buffer<float2> &a, const sokudo::Value<uint64_t> &incx,
+        CUDATask *cuda_scamax(const sokudo::Value<uint64_t> &n, const sokudo::Buffer<float2> &x,
+                              const sokudo::Value<uint64_t> &incx,
                               const sokudo::Value<uint64_t> &res);
 
-        CUDATask *cuda_dcamax(const sokudo::Buffer<double2> &a, const sokudo::Value<uint64_t> &incx,
+        CUDATask *cuda_dcamax(const sokudo::Value<uint64_t> &n, const sokudo::Buffer<double2> &x,
+                              const sokudo::Value<uint64_t> &incx,
                               const sokudo::Value<uint64_t> &res);
     }
 #endif
@@ -40,10 +44,14 @@ namespace sokudo::kernels::blas {
 
         // samax
         Task *operator()(
-                const sokudo::Buffer<float> &a,
+                const sokudo::Value<uint64_t> &n,
+                const sokudo::Buffer<float> &x,
                 const sokudo::Value<uint64_t> &incx,
                 const sokudo::Value<uint64_t> &res
         ) const {
+            sokudo_assert(n.value() > 0, "Vector cannot be empty");
+            sokudo_assert(incx.value() > 0, "Stride cannot be zero");
+            sokudo_assert(1 + (n.value() - 1) * incx.value() <= x.size(), "Index out of bounds");
             TaskExecutor fallback_executor = get_fallback_executor(executor);
 
             switch (fallback_executor) {
@@ -51,13 +59,13 @@ namespace sokudo::kernels::blas {
                     throw sokudo::errors::ResolutionException("CPU implementation not found");
                 case OPENCL:
 #ifdef SOKUDO_OPENCL
-                    return dynamic_cast<Task *>(sokudo::opencl::kernels::blas::cl_samax(a, incx, res));
+                    return dynamic_cast<Task *>(sokudo::opencl::kernels::blas::cl_samax(n, x, incx, res));
 #else
                     throw sokudo::errors::ResolutionException("OpenCL implementation not found");
 #endif
                 case CUDA:
 #ifdef SOKUDO_CUDA
-                    return dynamic_cast<Task *>(cuda_wrapper::amax::cuda_samax(a, incx, res));
+                    return dynamic_cast<Task *>(cuda_wrapper::amax::cuda_samax(n, x, incx, res));
 #else
                     throw sokudo::errors::ResolutionException("CUDA implementation not found");
 #endif
@@ -68,10 +76,14 @@ namespace sokudo::kernels::blas {
 
         // damax
         Task *operator()(
-                const sokudo::Buffer<double> &a,
+                const sokudo::Value<uint64_t> &n,
+                const sokudo::Buffer<double> &x,
                 const sokudo::Value<uint64_t> &incx,
                 const sokudo::Value<uint64_t> &res
         ) const {
+            sokudo_assert(n.value() > 0, "Vector cannot be empty");
+            sokudo_assert(incx.value() > 0, "Stride cannot be zero");
+            sokudo_assert(1 + (n.value() - 1) * incx.value() <= x.size(), "Index out of bounds");
             TaskExecutor fallback_executor = get_fallback_executor(executor);
 
             switch (fallback_executor) {
@@ -79,13 +91,13 @@ namespace sokudo::kernels::blas {
                     throw sokudo::errors::ResolutionException("CPU implementation not found");
                 case OPENCL:
 #ifdef SOKUDO_OPENCL
-                    return dynamic_cast<Task *>(sokudo::opencl::kernels::blas::cl_damax(a, incx, res));
+                    return dynamic_cast<Task *>(sokudo::opencl::kernels::blas::cl_damax(n, x, incx, res));
 #else
                     throw sokudo::errors::ResolutionException("OpenCL implementation not found");
 #endif
                 case CUDA:
 #ifdef SOKUDO_CUDA
-                    return dynamic_cast<Task *>(cuda_wrapper::amax::cuda_damax(a, incx, res));
+                    return dynamic_cast<Task *>(cuda_wrapper::amax::cuda_damax(n, x, incx, res));
 #else
                     throw sokudo::errors::ResolutionException("CUDA implementation not found");
 #endif
@@ -96,10 +108,14 @@ namespace sokudo::kernels::blas {
 
         //scamax
         Task *operator()(
-                const sokudo::Buffer<float2> &a,
+                const sokudo::Value<uint64_t> &n,
+                const sokudo::Buffer<float2> &x,
                 const sokudo::Value<uint64_t> &incx,
                 const sokudo::Value<uint64_t> &res
         ) const {
+            sokudo_assert(n.value() > 0, "Vector cannot be empty");
+            sokudo_assert(incx.value() > 0, "Stride cannot be zero");
+            sokudo_assert(1 + (n.value() - 1) * incx.value() <= x.size(), "Index out of bounds");
             TaskExecutor fallback_executor = get_fallback_executor(executor);
 
             switch (fallback_executor) {
@@ -107,13 +123,13 @@ namespace sokudo::kernels::blas {
                     throw sokudo::errors::ResolutionException("CPU implementation not found");
                 case OPENCL:
 #ifdef SOKUDO_OPENCL
-                    return dynamic_cast<Task *>(sokudo::opencl::kernels::blas::cl_scamax(a, incx, res));
+                    return dynamic_cast<Task *>(sokudo::opencl::kernels::blas::cl_scamax(n, x, incx, res));
 #else
                     throw sokudo::errors::ResolutionException("OpenCL implementation not found");
 #endif
                 case CUDA:
 #ifdef SOKUDO_CUDA
-                    return dynamic_cast<Task *>(cuda_wrapper::amax::cuda_scamax(a, incx, res));
+                    return dynamic_cast<Task *>(cuda_wrapper::amax::cuda_scamax(n, x, incx, res));
 #else
                     throw sokudo::errors::ResolutionException("CUDA implementation not found");
 #endif
@@ -124,10 +140,14 @@ namespace sokudo::kernels::blas {
 
         //dcamax
         Task *operator()(
-                const sokudo::Buffer<double2> &a,
+                const sokudo::Value<uint64_t> &n,
+                const sokudo::Buffer<double2> &x,
                 const sokudo::Value<uint64_t> &incx,
                 const sokudo::Value<uint64_t> &res
         ) const {
+            sokudo_assert(n.value() > 0, "Vector cannot be empty");
+            sokudo_assert(incx.value() > 0, "Stride cannot be zero");
+            sokudo_assert(1 + (n.value() - 1) * incx.value() <= x.size(), "Index out of bounds");
             TaskExecutor fallback_executor = get_fallback_executor(executor);
 
             switch (fallback_executor) {
@@ -135,13 +155,13 @@ namespace sokudo::kernels::blas {
                     throw sokudo::errors::ResolutionException("CPU implementation not found");
                 case OPENCL:
 #ifdef SOKUDO_OPENCL
-                    return dynamic_cast<Task *>(sokudo::opencl::kernels::blas::cl_dcamax(a, incx, res));
+                    return dynamic_cast<Task *>(sokudo::opencl::kernels::blas::cl_dcamax(n, x, incx, res));
 #else
                     throw sokudo::errors::ResolutionException("OpenCL implementation not found");
 #endif
                 case CUDA:
 #ifdef SOKUDO_CUDA
-                    return dynamic_cast<Task *>(cuda_wrapper::amax::cuda_dcamax(a, incx, res));
+                    return dynamic_cast<Task *>(cuda_wrapper::amax::cuda_dcamax(n, x, incx, res));
 #else
                     throw sokudo::errors::ResolutionException("CUDA implementation not found");
 #endif

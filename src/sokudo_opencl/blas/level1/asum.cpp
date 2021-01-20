@@ -1,6 +1,7 @@
 #include <kernel_enums.h>
 #include <sokudo_opencl/cl_helper.h>
 #include <types.h>
+#include <common.h>
 #include "asum.h"
 
 #ifndef SOKUDO_OPENCL_BLAS_SASUM_WGS
@@ -47,6 +48,7 @@ void sokudo::opencl::kernels::blas::register_asum() {
 void detail_asum_cl(
         sokudo::CLTask *task,
         const std::string &name,
+        const std::string &n,
         const std::string &x,
         const std::string &incx,
         const std::string &res,
@@ -55,6 +57,7 @@ void detail_asum_cl(
 ) {
 
     task->set(sokudo::KERNEL_BLAS_ASUM, name);
+    task->params()["n"] = n;
     task->params()["x"] = x;
     task->params()["incx"] = incx;
     task->params()["res"] = res;
@@ -63,6 +66,7 @@ void detail_asum_cl(
 }
 
 sokudo::CLTask *sokudo::opencl::kernels::blas::cl_sasum(
+        const sokudo::Value<uint64_t> &_n,
         const sokudo::Buffer<float> &x,
         const sokudo::Value<uint64_t> &incx,
         const sokudo::Value<float> &res,
@@ -76,7 +80,7 @@ sokudo::CLTask *sokudo::opencl::kernels::blas::cl_sasum(
     auto context = kernel.getInfo<CL_KERNEL_CONTEXT>();
     auto device = context.getInfo<CL_CONTEXT_DEVICES>().front();
 
-    uint64_t n = x.size();
+    uint64_t n = _n.value();
 
     auto queue = cl::CommandQueue(context, device, CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE);
 
@@ -85,7 +89,6 @@ sokudo::CLTask *sokudo::opencl::kernels::blas::cl_sasum(
     uint64_t s = stride == 0 ? SOKUDO_OPENCL_BLAS_SASUM_STRIDE : stride;
     auto local_size = wgs == 0 ? SOKUDO_OPENCL_BLAS_SASUM_WGS : wgs;
     auto global_size = (n / s + (n % s != 0));
-    global_size = (global_size / incx.value() + (global_size % incx.value() != 0));
     global_size = (global_size / local_size + (global_size % local_size != 0)) * local_size;
 
     while (m < n) {
@@ -106,11 +109,12 @@ sokudo::CLTask *sokudo::opencl::kernels::blas::cl_sasum(
     queue.enqueueReadBuffer(buf_a, CL_FALSE, 0, res.bsize(), res.inner());
 
     auto task = new CLTask(queue);
-    detail_asum_cl(task, "BLAS_SASUM", x.name(), incx.name(), res.name(), local_size, s);
+    detail_asum_cl(task, "BLAS_SASUM", _n.name(), x.name(), incx.name(), res.name(), local_size, s);
     return task;
 }
 
 sokudo::CLTask *sokudo::opencl::kernels::blas::cl_dasum(
+        const sokudo::Value<uint64_t> &_n,
         const sokudo::Buffer<double> &x,
         const sokudo::Value<uint64_t> &incx,
         const sokudo::Value<double> &res,
@@ -124,7 +128,7 @@ sokudo::CLTask *sokudo::opencl::kernels::blas::cl_dasum(
     auto context = kernel.getInfo<CL_KERNEL_CONTEXT>();
     auto device = context.getInfo<CL_CONTEXT_DEVICES>().front();
 
-    uint64_t n = x.size();
+    uint64_t n = _n.value();
 
     auto queue = cl::CommandQueue(context, device, CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE);
 
@@ -133,7 +137,6 @@ sokudo::CLTask *sokudo::opencl::kernels::blas::cl_dasum(
     uint64_t s = stride == 0 ? SOKUDO_OPENCL_BLAS_DASUM_STRIDE : stride;
     auto local_size = wgs == 0 ? SOKUDO_OPENCL_BLAS_DASUM_WGS : wgs;
     auto global_size = (n / s + (n % s != 0));
-    global_size = (global_size / incx.value() + (global_size % incx.value() != 0));
     global_size = (global_size / local_size + (global_size % local_size != 0)) * local_size;
 
     while (m < n) {
@@ -154,11 +157,12 @@ sokudo::CLTask *sokudo::opencl::kernels::blas::cl_dasum(
     queue.enqueueReadBuffer(buf_a, CL_FALSE, 0, res.bsize(), res.inner());
 
     auto task = new CLTask(queue);
-    detail_asum_cl(task, "BLAS_DASUM", x.name(), incx.name(), res.name(), local_size, s);
+    detail_asum_cl(task, "BLAS_DASUM", _n.name(), x.name(), incx.name(), res.name(), local_size, s);
     return task;
 }
 
 sokudo::CLTask *sokudo::opencl::kernels::blas::cl_scasum(
+        const sokudo::Value<uint64_t> &_n,
         const sokudo::Buffer<float2> &x,
         const sokudo::Value<uint64_t> &incx,
         const sokudo::Value<float> &res,
@@ -172,7 +176,7 @@ sokudo::CLTask *sokudo::opencl::kernels::blas::cl_scasum(
     auto context = kernel.getInfo<CL_KERNEL_CONTEXT>();
     auto device = context.getInfo<CL_CONTEXT_DEVICES>().front();
 
-    uint64_t n = x.size();
+    uint64_t n = _n.value();
 
     auto queue = cl::CommandQueue(context, device, CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE);
     cl::Buffer buf_a(context, CL_MEM_READ_WRITE | CL_MEM_HOST_READ_ONLY | CL_MEM_COPY_HOST_PTR, x.bsize(), x.inner());
@@ -180,7 +184,6 @@ sokudo::CLTask *sokudo::opencl::kernels::blas::cl_scasum(
     uint64_t s = stride == 0 ? SOKUDO_OPENCL_BLAS_SCASUM_STRIDE : stride;
     auto local_size = wgs == 0 ? SOKUDO_OPENCL_BLAS_SCASUM_WGS : wgs;
     auto global_size = (n / s + (n % s != 0));
-    global_size = (global_size / incx.value() + (global_size % incx.value() != 0));
     global_size = (global_size / local_size + (global_size % local_size != 0)) * local_size;
 
     while (m < n) {
@@ -200,11 +203,12 @@ sokudo::CLTask *sokudo::opencl::kernels::blas::cl_scasum(
 
     queue.enqueueReadBuffer(buf_a, CL_FALSE, 0, res.bsize(), res.inner());
     auto task = new CLTask(queue);
-    detail_asum_cl(task, "BLAS_SCASUM", x.name(), incx.name(), res.name(), local_size, s);
+    detail_asum_cl(task, "BLAS_SCASUM", _n.name(), x.name(), incx.name(), res.name(), local_size, s);
     return task;
 }
 
 sokudo::CLTask *sokudo::opencl::kernels::blas::cl_dcasum(
+        const sokudo::Value<uint64_t> &_n,
         const sokudo::Buffer<double2> &x,
         const sokudo::Value<uint64_t> &incx,
         const sokudo::Value<double> &res,
@@ -218,7 +222,7 @@ sokudo::CLTask *sokudo::opencl::kernels::blas::cl_dcasum(
     auto context = kernel.getInfo<CL_KERNEL_CONTEXT>();
     auto device = context.getInfo<CL_CONTEXT_DEVICES>().front();
 
-    uint64_t n = x.size();
+    uint64_t n = _n.value();
 
     auto queue = cl::CommandQueue(context, device, CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE);
     cl::Buffer buf_a(context, CL_MEM_READ_WRITE | CL_MEM_HOST_READ_ONLY | CL_MEM_COPY_HOST_PTR, x.bsize(), x.inner());
@@ -226,7 +230,6 @@ sokudo::CLTask *sokudo::opencl::kernels::blas::cl_dcasum(
     uint64_t s = stride == 0 ? SOKUDO_OPENCL_BLAS_DCASUM_STRIDE : stride;
     auto local_size = wgs == 0 ? SOKUDO_OPENCL_BLAS_DCASUM_WGS : wgs;
     auto global_size = (n / s + (n % s != 0));
-    global_size = (global_size / incx.value() + (global_size % incx.value() != 0));
     global_size = (global_size / local_size + (global_size % local_size != 0)) * local_size;
 
     while (m < n) {
@@ -247,6 +250,6 @@ sokudo::CLTask *sokudo::opencl::kernels::blas::cl_dcasum(
     queue.enqueueReadBuffer(buf_a, CL_FALSE, 0, res.bsize(), res.inner());
 
     auto task = new CLTask(queue);
-    detail_asum_cl(task, "BLAS_DCASUM", x.name(), incx.name(), res.name(), local_size, s);
+    detail_asum_cl(task, "BLAS_DCASUM", _n.name(), x.name(), incx.name(), res.name(), local_size, s);
     return task;
 }
