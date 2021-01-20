@@ -2,6 +2,7 @@
 #include <common.h>
 
 #ifdef SOKUDO_CUDA
+#include <sokudo_cuda/blas/level1/asum.h>
 
 void detail_asum_cu(
         sokudo::CUDATask *task,

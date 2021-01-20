@@ -5,7 +5,8 @@
 
 namespace sokudo::opencl::kernels::blas {
     CLTask *cl_saxpy(
-            const sokudo::Buffer<float> &alpha,
+            const sokudo::Value<uint64_t> &n,
+            const sokudo::Value<float> &alpha,
             const sokudo::Buffer<float> &x,
             const sokudo::Value<uint64_t> &incx,
             const sokudo::Buffer<float> &y,
@@ -15,7 +16,8 @@ namespace sokudo::opencl::kernels::blas {
     );
 
     CLTask *cl_daxpy(
-            const sokudo::Buffer<double> &alpha,
+            const sokudo::Value<uint64_t> &n,
+            const sokudo::Value<double> &alpha,
             const sokudo::Buffer<double> &x,
             const sokudo::Value<uint64_t> &incx,
             const sokudo::Buffer<double> &y,
@@ -25,7 +27,8 @@ namespace sokudo::opencl::kernels::blas {
     );
 
     CLTask *cl_scaxpy(
-            const sokudo::Buffer<float2> &alpha,
+            const sokudo::Value<uint64_t> &n,
+            const sokudo::Value<float2> &alpha,
             const sokudo::Buffer<float2> &x,
             const sokudo::Value<uint64_t> &incx,
             const sokudo::Buffer<float2> &y,
@@ -35,7 +38,8 @@ namespace sokudo::opencl::kernels::blas {
     );
 
     CLTask *cl_dcaxpy(
-            const sokudo::Buffer<double2> &alpha,
+            const sokudo::Value<uint64_t> &n,
+            const sokudo::Value<double2> &alpha,
             const sokudo::Buffer<double2> &x,
             const sokudo::Value<uint64_t> &incx,
             const sokudo::Buffer<double2> &y,

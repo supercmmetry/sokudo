@@ -83,7 +83,7 @@ namespace sokudo {
             return *this;
         }
 
-        Type &operator[](uint64_t index) {
+        Type operator[](uint64_t index) {
             _mutex->lock();
             if (index >= _size) {
                 throw sokudo::errors::InvalidOperationException("DataBuffer index out of bounds");

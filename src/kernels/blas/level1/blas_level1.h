@@ -4,5 +4,6 @@
 #include "asum.h"
 #include "amax.h"
 #include "amin.h"
+#include "axpy.h"
 
 #endif

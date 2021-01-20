@@ -1,6 +1,7 @@
 #include "amin.h"
 
 #ifdef SOKUDO_CUDA
+#include <sokudo_cuda/blas/level1/amin.h>
 
 void detail_amin_cu(
         sokudo::CUDATask *task,

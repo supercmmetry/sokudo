@@ -3,17 +3,11 @@
 
 #include <task.h>
 #include <types.h>
-
-#ifdef SOKUDO_CUDA
-
-#include <sokudo_cuda/blas/level1/amin.h>
-
-#endif
+#include <common.h>
 
 #ifdef SOKUDO_OPENCL
 
 #include <sokudo_opencl/blas/level1/amin.h>
-#include <common.h>
 
 #endif
 

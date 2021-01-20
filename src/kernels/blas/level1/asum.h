@@ -3,38 +3,44 @@
 
 #include <task.h>
 #include <types.h>
-
-#ifdef SOKUDO_CUDA
-
-#include <sokudo_cuda/blas/level1/asum.h>
-
-#endif
+#include <common.h>
 
 #ifdef SOKUDO_OPENCL
 
 #include <sokudo_opencl/blas/level1/asum.h>
-#include <common.h>
 
 #endif
 
 namespace sokudo::kernels::blas {
 #ifdef SOKUDO_CUDA
     namespace cuda_wrapper::asum {
-        CUDATask *cuda_sasum(const sokudo::Value<uint64_t> &n, const sokudo::Buffer<float> &x,
-                             const sokudo::Value<uint64_t> &incx,
-                             const sokudo::Value<float> &res);
+        CUDATask *cuda_sasum(
+                const sokudo::Value<uint64_t> &n,
+                const sokudo::Buffer<float> &x,
+                const sokudo::Value<uint64_t> &incx,
+                const sokudo::Value<float> &res
+        );
 
-        CUDATask *cuda_dasum(const sokudo::Value<uint64_t> &n, const sokudo::Buffer<double> &x,
-                             const sokudo::Value<uint64_t> &incx,
-                             const sokudo::Value<double> &res);
+        CUDATask *cuda_dasum(
+                const sokudo::Value<uint64_t> &n,
+                const sokudo::Buffer<double> &x,
+                const sokudo::Value<uint64_t> &incx,
+                const sokudo::Value<double> &res
+        );
 
-        CUDATask *cuda_scasum(const sokudo::Value<uint64_t> &n, const sokudo::Buffer<float2> &x,
-                              const sokudo::Value<uint64_t> &incx,
-                              const sokudo::Value<float> &res);
+        CUDATask *cuda_scasum(
+                const sokudo::Value<uint64_t> &n,
+                const sokudo::Buffer<float2> &x,
+                const sokudo::Value<uint64_t> &incx,
+                const sokudo::Value<float> &res
+        );
 
-        CUDATask *cuda_dcasum(const sokudo::Value<uint64_t> &n, const sokudo::Buffer<double2> &x,
-                              const sokudo::Value<uint64_t> &incx,
-                              const sokudo::Value<double> &res);
+        CUDATask *cuda_dcasum(
+                const sokudo::Value<uint64_t> &n,
+                const sokudo::Buffer<double2> &x,
+                const sokudo::Value<uint64_t> &incx,
+                const sokudo::Value<double> &res
+        );
     }
 #endif
 

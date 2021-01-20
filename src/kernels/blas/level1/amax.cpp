@@ -1,7 +1,7 @@
-#include <common.h>
 #include "amax.h"
 
 #ifdef SOKUDO_CUDA
+#include <sokudo_cuda/blas/level1/amax.h>
 
 void detail_amax_cu(
         sokudo::CUDATask *task,
